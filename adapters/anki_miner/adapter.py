@@ -9,13 +9,19 @@ imports anything from it, since another commit may not even import, and exits
 naming both commits when HEAD is not ``PINNED_COMMIT``.
 
 The parser is built the way anki_miner's ``create_services`` builds it for a
-default Japanese config: ``SubtitleParserService`` with the offline probes of
-the JMdict index in the ``jmdict-english`` slot (compound matching, kana
-recovery, the verb-front resolver, attested readings) and the name-wordset
-matcher. Each record is one ``ReadingUnit`` through ``parse_text_units``, the
-path anki_miner's reading tab mines text with; none of the optional filters
-(known words, frequency, word lists, name wordsets) run, as with its
-``bypass_optional_filters``.
+Japanese config with ``SETTINGS`` applied: ``SubtitleParserService`` with the
+offline probes of the JMdict index in the ``jmdict-english`` slot (compound
+matching, kana recovery, the verb-front resolver, attested readings, entry
+tags) and the name-wordset matcher. Each record is one ``ReadingUnit`` through
+``parse_text_units``, the path anki_miner's reading tab mines text with; none
+of the optional filters (known words, frequency, word lists, name wordsets)
+run, as with its ``bypass_optional_filters``.
+
+``SETTINGS`` are user settings a learner can pick in anki_miner, chosen for the
+highest card-ready rate on this gold set: number + counter cards on, pre-noun
+adjectives and conjunctions among the mined parts of speech, and proper nouns
+and numerals no longer excluded subtypes. The name-wordset matcher stays, as
+without it names split into junk pieces.
 
 anki_miner is content-only: it outputs card words, not a partition. For each:
 
@@ -26,8 +32,8 @@ anki_miner is content-only: it outputs card words, not a partition. For each:
 - form: ``mined_form``, the card front.
 - form_reading: ``expression_reading``, the card's reading of the front.
 
-``parse_text_units`` drops a card front it has already emitted, so a word that
-occurs twice in a record is output once, at its first occurrence.
+``parse_text_units`` runs with ``every_occurrence``, so a word that occurs twice
+in a record is output at both places; mining itself makes one card of it.
 """
 
 from __future__ import annotations
@@ -38,6 +44,7 @@ import os
 import subprocess
 import sys
 from collections.abc import Callable
+from dataclasses import replace
 from importlib import metadata
 from pathlib import Path
 from typing import Any
@@ -45,9 +52,15 @@ from typing import Any
 from monosashi.adapters.protocol import serve, to_hiragana
 
 # The pin in README.md.
-PINNED_COMMIT = "8e1d863bef2da5d54cd740f270ffb7ea306aa466"
+PINNED_COMMIT = "0b66053f809ce04a6ff1f1a4aadb10421cc582af"
 # The slot AnkiMinerConfig's default dictionary_chain points at.
 DICT_SLOT = "jmdict-english"
+# AnkiMinerConfig fields set over the defaults (module docstring).
+SETTINGS: dict[str, Any] = {
+    "mine_number_counters": True,
+    "allowed_pos": ("名詞", "動詞", "形容詞", "副詞", "形状詞", "代名詞", "連体詞", "接続詞"),
+    "excluded_subtypes": ("非自立", "接尾", "助動詞", "接頭"),
+}
 
 
 def check_commit(checkout: Path) -> str:
@@ -107,7 +120,7 @@ def main() -> None:
     from anki_miner.services.wordset_service import WordsetService
     from anki_miner.utils.ja_normalize import normalize_for_tokenization, standardize_kanji_variants
 
-    config = AnkiMinerConfig()
+    config = replace(AnkiMinerConfig(), **SETTINGS)
     registry = DictionaryRegistry(config.dicts_root)
     registry.load()
     definitions = DefinitionService(
@@ -136,7 +149,7 @@ def main() -> None:
 
     def analyze(text: str) -> list[dict[str, Any]]:
         words, _index, _counts = parser.parse_text_units(
-            [ReadingUnit(text=text, index=0, location_label="")], want_line_index=False
+            [ReadingUnit(text=text, index=0, location_label="")], want_line_index=False, every_occurrence=True
         )
         # Offsets index the stored line, the unit text after normalization. Mapping
         # them back still takes the normalizer itself, run on prefixes of the input.

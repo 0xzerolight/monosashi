@@ -1,6 +1,6 @@
 {
   "name": "anki_miner",
-  "version": "anki_miner 3.9.0, unidic-lite 1.0.8",
+  "version": "anki_miner 3.10.1, unidic-lite 1.0.8",
   "dictionary": "JMdict [2026-10-09] (jmdict-yomitan JMdict_english), imported by anki_miner",
   "dictionary_date": "2026-10-09",
   "partition": false,
@@ -8,5 +8,5 @@
     "form",
     "form_reading"
   ],
-  "commit": "8e1d863bef2da5d54cd740f270ffb7ea306aa466"
+  "commit": "0b66053f809ce04a6ff1f1a4aadb10421cc582af"
 }
