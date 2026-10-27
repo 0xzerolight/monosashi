@@ -1,0 +1,58 @@
+# Jiten's parser and its database, as compose project monosashi-jiten
+# (README.md). The checkout and the dictionary files live in the cache; the
+# database is the named volume monosashi-jiten_pgdata. No port is published:
+# the adapter runs in `main` and reaches Postgres and Redis by service name.
+
+services:
+  # Postgres 17 with PGroonga, from Jiten's own postgres-pgroonga/Dockerfile;
+  # Jiten's migrations create PGroonga indexes.
+  pg:
+    build: ${MONOSASHI_CACHE:-${HOME}/.cache/monosashi}/adapters/jiten/src/postgres-pgroonga
+    image: monosashi-jiten-pg
+    shm_size: 1gb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: jiten
+      POSTGRES_MULTIPLE_DATABASES: jiten
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ${MONOSASHI_CACHE:-${HOME}/.cache/monosashi}/adapters/jiten/src/postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Jiten's parser caches in Redis and cannot start without it. Nothing is
+  # saved, so restarting this container empties the cache.
+  redis:
+    image: redis:latest
+    command: ["redis-server", "--maxmemory", "2gb", "--maxmemory-policy", "allkeys-lru", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Jiten's CLI (/app/cli) and the adapter (/app/adapter), idle until run with docker exec.
+  main:
+    build:
+      context: .
+      additional_contexts:
+        jiten: ${MONOSASHI_CACHE:-${HOME}/.cache/monosashi}/adapters/jiten/src
+    image: monosashi-jiten-main
+    environment:
+      ConnectionStrings__JitenDatabase: "Host=pg;Database=jiten;Username=postgres;Password=password;Timeout=300;CommandTimeout=0"
+      ConnectionStrings__Redis: "redis:6379"
+      DictionaryPath: /data/system_full.dic
+    volumes:
+      - ${MONOSASHI_CACHE:-${HOME}/.cache/monosashi}/adapters/jiten/data:/data:ro
+    depends_on:
+      pg:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  pgdata:

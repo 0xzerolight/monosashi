@@ -1,0 +1,13 @@
+{
+  "name": "fugashi-unidic-lite",
+  "version": "fugashi 1.5.2, unidic-lite 1.0.8",
+  "dictionary": "UniDic 2.1.2 (unidic-lite)",
+  "dictionary_date": "2013",
+  "partition": true,
+  "fields": [
+    "form",
+    "reading",
+    "form_reading",
+    "kind"
+  ]
+}

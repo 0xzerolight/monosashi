@@ -1,0 +1,14 @@
+{
+  "name": "jiten",
+  "version": "Jiten 2c69236b, parser revision 1",
+  "dictionary": "JMdict and JMnedict as Jiten imports them, with SudachiDict full 20260428 and Jiten's user dictionary; without jiten.moe's corpus frequency ranks and word origins (not public)",
+  "dictionary_date": "2026-10-15",
+  "partition": true,
+  "fields": [
+    "form",
+    "form_reading",
+    "entries",
+    "kind"
+  ],
+  "commit": "2c69236b547de51ebac489f463830f4adba71e0e"
+}

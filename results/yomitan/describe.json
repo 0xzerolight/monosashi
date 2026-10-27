@@ -1,0 +1,15 @@
+{
+  "name": "yomitan",
+  "version": "Yomitan 26.10.12.0",
+  "dictionary": "JMdict [2026-10-12] (jmdict-yomitan, JMdict_english.zip)",
+  "dictionary_date": "2026-10-12",
+  "partition": true,
+  "fields": [
+    "form",
+    "reading",
+    "form_reading",
+    "entries",
+    "kind"
+  ],
+  "commit": "e7334a96106a6c74e6fa75bd33a5ea1219d92712"
+}

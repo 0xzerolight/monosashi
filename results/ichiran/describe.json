@@ -1,0 +1,15 @@
+{
+  "name": "ichiran",
+  "version": "ichiran d00bee6, database ichiran-260118",
+  "dictionary": "JMdict in ichiran's ichiran-260118 database dump, with its errata",
+  "dictionary_date": "2026-01-01",
+  "partition": true,
+  "fields": [
+    "form",
+    "reading",
+    "form_reading",
+    "entries",
+    "kind"
+  ],
+  "commit": "d00bee6e864c8863ed7ba0eb14ae8ee8221a22fa"
+}

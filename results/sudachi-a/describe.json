@@ -1,0 +1,13 @@
+{
+  "name": "sudachi-a",
+  "version": "SudachiPy 0.7.0, mode A",
+  "dictionary": "SudachiDict-full 20261015",
+  "dictionary_date": "2026-10-15",
+  "partition": true,
+  "fields": [
+    "form",
+    "reading",
+    "form_reading",
+    "kind"
+  ]
+}

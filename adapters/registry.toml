@@ -1,0 +1,53 @@
+# Every adapter monosashi can run: `monosashi run NAME`. Commands run from the
+# repo root; {python} is the interpreter running monosashi, {repo} the repo
+# root, {cache} the monosashi cache and {home} the user's home.
+#
+# The light adapters below run in this repo's venv with the `adapters`
+# dependency group: `uv run --group adapters monosashi run NAME`.
+
+[fugashi-unidic-lite]
+command = ["{python}", "-m", "monosashi.adapters.fugashi_unidic"]
+
+[sudachi-a]
+command = ["{python}", "-m", "monosashi.adapters.sudachi", "--mode", "A"]
+
+[sudachi-c]
+command = ["{python}", "-m", "monosashi.adapters.sudachi", "--mode", "C"]
+
+# himotoki-rs runs in its own venv; build it first (adapters/himotoki/README.md).
+[himotoki]
+command = ["adapters/himotoki/.venv/bin/python", "adapters/himotoki/adapter.py"]
+pythonpath = true
+env = { HIMOTOKI_DB_PATH = "{cache}/adapters/himotoki/himotoki.db", HIMOTOKI_MAX_TEXT_LENGTH = "10000" }
+
+# The full UniDic 3.1 runs in its own venv, so it never becomes fugashi's
+# default in this one; set it up first (adapters/unidic3/README.md).
+[unidic3]
+command = ["adapters/unidic3/.venv/bin/python", "adapters/unidic3/adapter.py"]
+pythonpath = true
+
+# anki_miner runs in its own checkout's venv, read-only, with its user data in
+# the cache; import its dictionary first (adapters/anki_miner/README.md).
+[anki_miner]
+command = ["{home}/Projects/anki_miner/.venv/bin/python", "adapters/anki_miner/adapter.py"]
+pythonpath = true
+env = { ANKI_MINER_HOME = "{cache}/adapters/anki_miner/home" }
+
+# ichiran runs in the Docker containers its own compose file builds; start them
+# first (adapters/ichiran/README.md). The adapter itself is stdlib only.
+[ichiran]
+command = ["{python}", "adapters/ichiran/adapter.py"]
+pythonpath = true
+env = { ICHIRAN_CONTAINER = "monosashi-ichiran-main-1" }
+
+# Yomitan runs under Node from its own checkout in the cache, and loads the
+# JMdict there when it starts; set both up first (adapters/yomitan/README.md).
+[yomitan]
+command = ["node", "adapters/yomitan/adapter.mjs"]
+env = { YOMITAN_HOME = "{cache}/adapters/yomitan" }
+
+# Jiten runs in the Docker containers of its compose project monosashi-jiten,
+# against the database its own CLI imports; set them up first
+# (adapters/jiten/README.md). The adapter speaks the contract itself.
+[jiten]
+command = ["docker", "exec", "-i", "monosashi-jiten-main-1", "dotnet", "adapter/MonosashiJiten.dll"]

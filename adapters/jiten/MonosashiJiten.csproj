@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Built against a Jiten checkout at $(JitenSrc), inside the Dockerfile's build stage (README.md). -->
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="$(JitenSrc)/Jiten.Core/Jiten.Core.csproj" />
+        <ProjectReference Include="$(JitenSrc)/Jiten.Parser/Jiten.Parser.csproj" />
+        <!-- How Jiten's /vocabulary/parse endpoint places tokens in the text; the file only needs the BCL. -->
+        <Compile Include="$(JitenSrc)/Jiten.Api/Helpers/TokenPositionHelper.cs" Link="TokenPositionHelper.cs" />
+    </ItemGroup>
+
+</Project>

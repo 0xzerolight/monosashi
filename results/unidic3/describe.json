@@ -1,0 +1,13 @@
+{
+  "name": "unidic3",
+  "version": "fugashi 1.5.2, unidic 1.1.0",
+  "dictionary": "UniDic 3.1.0 (unidic)",
+  "dictionary_date": "2021-08-31",
+  "partition": true,
+  "fields": [
+    "form",
+    "reading",
+    "form_reading",
+    "kind"
+  ]
+}

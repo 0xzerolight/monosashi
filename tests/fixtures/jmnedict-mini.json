@@ -1,0 +1,422 @@
+{
+"version": "3.6.2",
+"languages": [
+"all"
+],
+"commonOnly": false,
+"dictDate": "2026-10-12",
+"dictRevisions": [
+"1.08"
+],
+"tags": {
+"relig": "religion",
+"dei": "deity",
+"ship": "ship name",
+"fem": "female given name or forename",
+"leg": "legend",
+"myth": "mythology",
+"surname": "family or surname",
+"masc": "male given name or forename",
+"station": "railway station",
+"company": "company name",
+"fict": "fiction",
+"place": "place name",
+"group": "group",
+"creat": "creature",
+"given": "given name or forename, gender not specified",
+"oth": "other",
+"product": "product name",
+"serv": "service",
+"work": "work of art, literature, music, etc. name",
+"unclass": "unclassified name",
+"ev": "event",
+"obj": "object",
+"person": "full name of a particular person",
+"organization": "organization name",
+"char": "character",
+"doc": "document"
+},
+"words": [
+{
+"id": "5046507",
+"kanji": [
+{
+"text": "セントヘレナ島",
+"tags": []
+}
+],
+"kana": [
+{
+"text": "セントヘレナとう",
+"tags": [],
+"appliesToKanji": [
+"*"
+]
+}
+],
+"translation": [
+{
+"type": [
+"place"
+],
+"related": [],
+"translation": [
+{
+"lang": "eng",
+"text": "Saint Helena (island)"
+}
+]
+}
+]
+},
+{
+"id": "5074354",
+"kanji": [],
+"kana": [
+{
+"text": "ヘレナ",
+"tags": [],
+"appliesToKanji": [
+"*"
+]
+}
+],
+"translation": [
+{
+"type": [
+"place"
+],
+"related": [],
+"translation": [
+{
+"lang": "eng",
+"text": "Helena"
+}
+]
+}
+]
+},
+{
+"id": "5543705",
+"kanji": [
+{
+"text": "田中",
+"tags": []
+}
+],
+"kana": [
+{
+"text": "たなか",
+"tags": [],
+"appliesToKanji": [
+"*"
+]
+}
+],
+"translation": [
+{
+"type": [
+"surname",
+"place"
+],
+"related": [],
+"translation": [
+{
+"lang": "eng",
+"text": "Tanaka"
+}
+]
+}
+]
+},
+{
+"id": "5543706",
+"kanji": [
+{
+"text": "田中",
+"tags": []
+}
+],
+"kana": [
+{
+"text": "たなた",
+"tags": [],
+"appliesToKanji": [
+"*"
+]
+}
+],
+"translation": [
+{
+"type": [
+"surname"
+],
+"related": [],
+"translation": [
+{
+"lang": "eng",
+"text": "Tanata"
+}
+]
+}
+]
+},
+{
+"id": "5543707",
+"kanji": [
+{
+"text": "田中",
+"tags": []
+}
+],
+"kana": [
+{
+"text": "たんか",
+"tags": [],
+"appliesToKanji": [
+"*"
+]
+}
+],
+"translation": [
+{
+"type": [
+"surname"
+],
+"related": [],
+"translation": [
+{
+"lang": "eng",
+"text": "Tanka"
+}
+]
+}
+]
+},
+{
+"id": "5543708",
+"kanji": [
+{
+"text": "田中",
+"tags": []
+}
+],
+"kana": [
+{
+"text": "だなか",
+"tags": [],
+"appliesToKanji": [
+"*"
+]
+}
+],
+"translation": [
+{
+"type": [
+"surname"
+],
+"related": [],
+"translation": [
+{
+"lang": "eng",
+"text": "Danaka"
+}
+]
+}
+]
+},
+{
+"id": "5543709",
+"kanji": [
+{
+"text": "田中",
+"tags": []
+}
+],
+"kana": [
+{
+"text": "でんちゅう",
+"tags": [],
+"appliesToKanji": [
+"*"
+]
+}
+],
+"translation": [
+{
+"type": [
+"surname",
+"given"
+],
+"related": [],
+"translation": [
+{
+"lang": "eng",
+"text": "Denchuu"
+}
+]
+}
+]
+},
+{
+"id": "5543710",
+"kanji": [
+{
+"text": "田中",
+"tags": []
+}
+],
+"kana": [
+{
+"text": "なたか",
+"tags": [],
+"appliesToKanji": [
+"*"
+]
+}
+],
+"translation": [
+{
+"type": [
+"surname"
+],
+"related": [],
+"translation": [
+{
+"lang": "eng",
+"text": "Nataka"
+}
+]
+}
+]
+},
+{
+"id": "5543711",
+"kanji": [
+{
+"text": "田中",
+"tags": []
+}
+],
+"kana": [
+{
+"text": "ぬなか",
+"tags": [],
+"appliesToKanji": [
+"*"
+]
+}
+],
+"translation": [
+{
+"type": [
+"surname"
+],
+"related": [],
+"translation": [
+{
+"lang": "eng",
+"text": "Nunaka"
+}
+]
+}
+]
+},
+{
+"id": "5543712",
+"kanji": [
+{
+"text": "田中",
+"tags": []
+}
+],
+"kana": [
+{
+"text": "のなか",
+"tags": [],
+"appliesToKanji": [
+"*"
+]
+}
+],
+"translation": [
+{
+"type": [
+"surname"
+],
+"related": [],
+"translation": [
+{
+"lang": "eng",
+"text": "Nonaka"
+}
+]
+}
+]
+},
+{
+"id": "5543713",
+"kanji": [
+{
+"text": "田中",
+"tags": []
+}
+],
+"kana": [
+{
+"text": "ひろか",
+"tags": [],
+"appliesToKanji": [
+"*"
+]
+}
+],
+"translation": [
+{
+"type": [
+"surname"
+],
+"related": [],
+"translation": [
+{
+"lang": "eng",
+"text": "Hiroka"
+}
+]
+}
+]
+},
+{
+"id": "5543714",
+"kanji": [
+{
+"text": "田中",
+"tags": []
+}
+],
+"kana": [
+{
+"text": "やなか",
+"tags": [],
+"appliesToKanji": [
+"*"
+]
+}
+],
+"translation": [
+{
+"type": [
+"surname"
+],
+"related": [],
+"translation": [
+{
+"lang": "eng",
+"text": "Yanaka"
+}
+]
+}
+]
+}
+]
+}

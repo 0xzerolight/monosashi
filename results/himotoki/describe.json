@@ -1,0 +1,15 @@
+{
+  "name": "himotoki",
+  "version": "himotoki-rs 0.3.2",
+  "dictionary": "JMdict_e bundled with himotoki-rs, with its errata",
+  "dictionary_date": "2026-01-02",
+  "partition": true,
+  "fields": [
+    "form",
+    "reading",
+    "form_reading",
+    "entries",
+    "kind"
+  ],
+  "commit": "12ed2eb315e01455a918a9144d5e34f400d3cf13"
+}

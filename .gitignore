@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.venv
+adapters/**/.venv/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Project specific
+*.log
+.claude/
+.mypy_cache/
+.ruff_cache/
+# Local-only planning notes
+docs/
+.claude-runner/
+AGENTS.md
+.agents/
+.codex/
+.superpowers/
+# subagent-driven-development artifacts
+sdd/
+# Raw adapter predictions; RESULTS.md keeps the scores
+runs/
+# Nothing that need not be public: seed records quote lines that are not ours to publish
+# (scripts/import_seeds.py rebuilds data/seeds), the selection is rebuilt by `monosashi pool`
+# and `monosashi select`, and labeling runs are working files. Gold records from seeds go to
+# data/private/core.
+data/private/
+data/seeds/
+data/selection/
+data/labels/
+# Heavy adapter toolchains, each built in its own directory
+adapters/**/node_modules/
+adapters/**/bin/
+adapters/**/obj/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# git worktrees for isolated feature work (superpowers:using-git-worktrees)
+.worktrees/
