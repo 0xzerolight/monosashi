@@ -1,0 +1,53 @@
+name: Wrong gold label
+description: Report a unit in the gold set that SPEC.md says should be labeled differently.
+title: "[Label]: "
+labels:
+  - gold-label
+body:
+  - type: markdown
+    attributes:
+      value: |
+        SPEC.md is the authority on what a label means. If you think the rule itself is wrong, say so in the last field.
+
+  - type: input
+    id: record
+    attributes:
+      label: Record id
+      description: The record's `id`, from data/core/*.jsonl or data/seed-labels/*.jsonl.
+      placeholder: tat-123456
+    validations:
+      required: true
+
+  - type: input
+    id: unit
+    attributes:
+      label: Unit
+      description: The unit's surface and its offsets.
+      placeholder: 食べちゃった (4-10)
+    validations:
+      required: true
+
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What is wrong
+      description: The field that is wrong (span, kind, entries, form, reading, form_reading, chain, targets), what it says now, and what it should say.
+    validations:
+      required: true
+
+  - type: input
+    id: spec
+    attributes:
+      label: SPEC.md section
+      description: The rule that decides it.
+      placeholder: §4.1
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: JMdict entries, senses, other sources, or why the rule itself should change.
+    validations:
+      required: false

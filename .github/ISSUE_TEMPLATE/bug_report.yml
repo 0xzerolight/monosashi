@@ -1,0 +1,67 @@
+name: Bug report
+description: Report a bug in monosashi's code, an adapter, or the docs.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to file a bug report.
+        A wrong gold label has its own template.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What went wrong? Include what you expected to happen and what actually happened.
+      placeholder: When I run X, Y happens instead of Z.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: The exact commands, from a fresh checkout if you can.
+      placeholder: |
+        1. uv sync
+        2. uv run monosashi jmdict build
+        3. uv run monosashi ...
+    validations:
+      required: true
+
+  - type: input
+    id: commit
+    attributes:
+      label: monosashi commit
+      description: Output of `git rev-parse --short HEAD`.
+      placeholder: 5de3876
+    validations:
+      required: true
+
+  - type: input
+    id: adapter
+    attributes:
+      label: Adapter
+      description: The adapter involved, if any (its name in adapters/registry.toml).
+      placeholder: e.g. sudachi-c, ichiran
+    validations:
+      required: false
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      description: e.g. Ubuntu 24.04, macOS 15.2, Windows 11 (WSL).
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Output
+      description: The full error or output.
+      render: shell
+    validations:
+      required: false

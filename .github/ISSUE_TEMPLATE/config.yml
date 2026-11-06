@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or general discussion
+    url: https://github.com/0xzerolight/monosashi/discussions
+    about: Ask a question or chat about the benchmark. For bugs, gold-label errors and new tools, use the issue templates above.

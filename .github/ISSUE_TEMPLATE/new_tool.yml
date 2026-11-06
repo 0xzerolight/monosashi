@@ -1,0 +1,54 @@
+name: New tool
+description: Suggest a tokenizer or learner tool for monosashi to measure.
+title: "[Tool]: "
+labels:
+  - new-tool
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a tool. Before filing, please check adapters/registry.toml and the existing Issues.
+
+  - type: input
+    id: tool
+    attributes:
+      label: Tool
+      description: Its name and repository or home page.
+      placeholder: https://github.com/...
+    validations:
+      required: true
+
+  - type: input
+    id: license
+    attributes:
+      label: License
+      placeholder: e.g. MIT, GPL-3.0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: fields
+    attributes:
+      label: What it outputs
+      description: Which of these the tool gives for each word.
+      options:
+        - label: Word boundaries for the whole sentence
+        - label: Dictionary form
+        - label: Reading in context
+        - label: JMdict entry ids
+        - label: Part of speech
+
+  - type: textarea
+    id: run
+    attributes:
+      label: How it runs
+      description: Language, install steps, and whether it can be pinned to a commit or release.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: adapter
+    attributes:
+      label: Adapter
+      options:
+        - label: I can write the adapter myself (see CONTRIBUTING.md, Adding a tool).
