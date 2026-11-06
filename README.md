@@ -19,9 +19,7 @@ Please leave a ⭐ star if monosashi helped you - it helps others find it :).
 
 # <p align="center">Results</p>
 
-monosashi is a gold set of Japanese sentences labeled with learner word units, plus a harness that runs existing tokenizers on it and scores them. A learner word unit is what a learner would look up: a JMdict entry with its inflection chain, its dictionary form and its reading in context. The question it answers: which tool turns real text into correct flashcard words without post-processing?
-
-Version 0.1.1: 993 gold records under spec 0.5, nine tools. The overall scores, on the 687 records that are not from a tool's own test suite:
+993 Japanese sentences labeled with the words a learner would look up in JMdict, and a harness that scores tokenizers on them.
 
 | tool | card-ready rate | junk rate (lower is better) | median ms |
 |---|--:|--:|--:|
@@ -35,89 +33,85 @@ Version 0.1.1: 993 gold records under spec 0.5, nine tools. The overall scores, 
 | [unidic3](https://github.com/polm/unidic-py) | 56.9 | 28.2 | 0.31 |
 | [fugashi-unidic-lite](https://github.com/polm/fugashi) | 56.6 | 28.2 | 0.18 |
 
-Card-ready rate: the share of gold words a tool outputs as a correct card, with the right span, dictionary form and reading. Junk rate: the share of a tool's cards that are not gold words. Every table, with 95% intervals and breakdowns by category, register and slice: [RESULTS.md](RESULTS.md). The labeling rules: [SPEC.md](SPEC.md).
+687 records; the tools' own test sentences are left out. Card-ready: gold words output with the right span, form and reading. Junk: output words that match no gold word. Full tables: [RESULTS.md](RESULTS.md). Labeling rules: [SPEC.md](SPEC.md).
 
 ## Installation
 
-### Requirements
-
-- Python 3.12 and [uv](https://docs.astral.sh/uv/).
-- For the heavy adapters only: Docker (ichiran, Jiten), Node 22+ (Yomitan), Rust 1.87+ (himotoki), an anki_miner checkout (anki_miner).
+Python 3.12 and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 git clone https://github.com/0xzerolight/monosashi.git
 cd monosashi
 uv sync
-uv run monosashi jmdict build                                   # fetch and index the pinned JMdict + JMnedict
+uv run monosashi jmdict build                                   # fetch and index the pinned JMdict
 uv run monosashi score results/* --gold data/core/*.jsonl       # score the committed predictions
-uv run --group adapters monosashi run fugashi-unidic-lite sudachi-c   # run the light adapters into runs/
+uv run --group adapters monosashi run fugashi-unidic-lite sudachi-c   # run the light adapters
 uv run monosashi score runs/*
 ```
 
 <details>
 <summary><strong>Heavy adapters</strong></summary>
 
-Each runs in its own environment, pinned to a commit, with its setup in `adapters/<name>/README.md`. Once set up: `uv run monosashi run NAME`.
+Set one up from its README, then `uv run monosashi run NAME`.
 
-| Adapter | Needs | Setup |
-|---|---|---|
-| ichiran | Docker, about 5 GB of database | [adapters/ichiran](adapters/ichiran/README.md) |
-| jiten | Docker, about 3 GB of checkout and database | [adapters/jiten](adapters/jiten/README.md) |
-| himotoki | Rust 1.87+, a 2.1 GB database | [adapters/himotoki](adapters/himotoki/README.md) |
-| yomitan | Node 22+, 1.6 GB of memory while it runs | [adapters/yomitan](adapters/yomitan/README.md) |
-| unidic3 | its own venv, so the full UniDic never becomes fugashi's default here | [adapters/unidic3](adapters/unidic3/README.md) |
-| anki_miner | a checkout at `~/Projects/anki_miner`, used read-only | [adapters/anki_miner](adapters/anki_miner/README.md) |
+| Adapter | Needs |
+|---|---|
+| [ichiran](adapters/ichiran/README.md) | Docker, ~5 GB |
+| [jiten](adapters/jiten/README.md) | Docker, ~3 GB |
+| [himotoki](adapters/himotoki/README.md) | Rust 1.87+, ~2 GB |
+| [yomitan](adapters/yomitan/README.md) | Node 22+ |
+| [unidic3](adapters/unidic3/README.md) | its own venv |
+| [anki_miner](adapters/anki_miner/README.md) | a checkout at `~/Projects/anki_miner` |
 
 </details>
 
 <details>
 <summary><strong>Score your own tool</strong></summary>
 
-Write an adapter: a command that reads `{"id", "text"}` lines on stdin and answers each with `{"id", "units": [...]}`, and prints what it outputs for `--describe`. The contract is in [predictions.py](src/monosashi/predictions.py), a standard-library helper in [protocol.py](src/monosashi/adapters/protocol.py). List it in [adapters/registry.toml](adapters/registry.toml), then `uv run monosashi run NAME`.
+An adapter reads `{"id", "text"}` lines, answers `{"id", "units": [...]}`, and says what it outputs on `--describe`. Contract: [predictions.py](src/monosashi/predictions.py). Helper: [protocol.py](src/monosashi/adapters/protocol.py). Register it in [adapters/registry.toml](adapters/registry.toml).
 
 </details>
 
 <details>
 <summary><strong>Seed records</strong></summary>
 
-306 of the records are other tools' test sentences, some quoting song lyrics and novels. They ship without their text in `data/seed-labels/`. To score them too:
+306 records are other tools' test sentences, shipped without their text. To restore it:
 
 ```bash
 git clone https://github.com/0xzerolight/anki_miner ../anki_miner
-uv run python scripts/import_seeds.py --anki-miner ../anki_miner   # data/seeds/, from each tool's pinned source
-uv run python scripts/seed_labels.py rebuild                         # data/private/core/, which run and score then include
+uv run python scripts/import_seeds.py --anki-miner ../anki_miner
+uv run python scripts/seed_labels.py rebuild
 ```
 
 </details>
 
 ## What it measures
 
-- **Card-ready rate** - the headline: gold words the tool outputs with the right span, form and reading. Strict, and lenient, which forgives a split at a compound's accepted split point (一人|暮らし).
-- **Junk rate** - always next to it, so a tool can't score by emitting more words.
-- **Segmentation** - span F1, boundary F1 and content-unit F1.
-- **Forms and readings** - accuracy on the spans a tool reproduces, and on the gold units its pieces tile.
-- **Entry accuracy** - for tools that output JMdict ids, against the pinned snapshot.
-- **Normalization** - colloquial variants mapped to the standard word (すげー -> すごい).
-- **Breakdowns** - 28 categories (inflection chains, contractions, heteronyms, counters, Kansai-ben and more), registers, slices and seed suites.
-- **Speed** - median milliseconds per sentence, warm.
+- **Card-ready rate** - strict, and lenient on accepted compound splits (一人|暮らし).
+- **Junk rate** - output words that match no gold word.
+- **Segmentation** - span, boundary and content-unit F1.
+- **Form, reading and entry accuracy.**
+- **Normalization** - すげー -> すごい.
+- **Breakdowns** - 28 categories, registers, slices, seed suites.
+- **Speed** - median ms per sentence.
 
-The definitions are in [SPEC.md §7](SPEC.md#7-how-labels-are-scored).
+Definitions: [SPEC.md §7](SPEC.md#7-how-labels-are-scored).
 
 <details>
 <summary><strong>How It Works</strong></summary>
 
-1. **Select** sentences from Tatoeba, Aozora Bunko and UD Japanese GSD, filling a quota for each hard category; lines Claude wrote fill the categories real text covers thinly.
-2. **Label** each sentence twice, blind: two Claude Opus labelers work from a sheet of every JMdict entry that could match, without seeing tool output or each other.
-3. **Validate** every record against [SPEC.md](SPEC.md): spans, entry ids in the pinned JMdict, chains that deinflect back to the form, readings.
-4. **Adjudicate** disagreements, agreed words no learner tool reproduces, and a 10% audit; rulings on the rules become spec versions.
-5. **Score** each tool behind one JSONL contract against the gold units.
+1. **Select** sentences by category quota; Claude-written lines fill thin categories.
+2. **Label** each sentence twice, blind, with two Claude Opus agents.
+3. **Validate** every record against [SPEC.md](SPEC.md).
+4. **Adjudicate** disagreements, plus a 10% audit.
+5. **Score** each tool through one JSONL contract.
 
 </details>
 
 <details>
-<summary><strong>Data sources and licenses</strong></summary>
+<summary><strong>Data sources</strong></summary>
 
-Sentences from [Tatoeba](https://tatoeba.org) (CC BY 2.0 FR), [Aozora Bunko](https://www.aozora.gr.jp) (public domain), [UD Japanese GSD](https://github.com/UniversalDependencies/UD_Japanese-GSD) (CC BY-SA 4.0), lines written for monosashi, and the test suites of ichiran, Jiten and anki_miner. Entry ids refer to [JMdict and JMnedict](https://www.edrdg.org/edrdg/licence.html) (EDRDG, CC BY-SA 4.0), through [jmdict-simplified](https://github.com/scriptin/jmdict-simplified). Every record names its source and license; the full credits are in [ATTRIBUTION.md](ATTRIBUTION.md).
+[Tatoeba](https://tatoeba.org) (CC BY 2.0 FR), [Aozora Bunko](https://www.aozora.gr.jp) (public domain), [UD Japanese GSD](https://github.com/UniversalDependencies/UD_Japanese-GSD) (CC BY-SA 4.0), Claude-written lines, and the test suites of ichiran, Jiten and anki_miner. Entries: [JMdict and JMnedict](https://www.edrdg.org/edrdg/licence.html) (EDRDG, CC BY-SA 4.0) via [jmdict-simplified](https://github.com/scriptin/jmdict-simplified). Credits: [ATTRIBUTION.md](ATTRIBUTION.md).
 
 </details>
 
@@ -125,28 +119,18 @@ Sentences from [Tatoeba](https://tatoeba.org) (CC BY 2.0 FR), [Aozora Bunko](htt
 
 | Issue | Solution |
 |---|---|
-| `ModuleNotFoundError: fugashi` or `sudachipy` | The light adapters live in the optional `adapters` group, which `uv sync` removes. Run them with `uv run --group adapters`. |
-| `jmdict build`: sha256 does not match the pin | The upstream file changed after it was pinned. Open an issue with the message. |
-| Seed and category tables differ from RESULTS.md | `results/` holds no predictions for the seed records, so only the Overall table reproduces from it. Rebuild the seeds ([Seed records](#installation)) and rerun the tools. |
-| anki_miner: `~/Projects/anki_miner/.venv/bin/python` not found | The registry runs anki_miner from a checkout there. Clone it as in [adapters/anki_miner](adapters/anki_miner/README.md), or change its `command` in [adapters/registry.toml](adapters/registry.toml). |
-| ichiran or jiten: `No such container` | Start its compose project first: [adapters/ichiran](adapters/ichiran/README.md), [adapters/jiten](adapters/jiten/README.md). |
+| `ModuleNotFoundError: fugashi` or `sudachipy` | Use `uv run --group adapters`; `uv sync` drops that group. |
+| `jmdict build`: sha256 mismatch | The upstream file changed; open an issue. |
+| Seed or category tables differ from RESULTS.md | `results/` has no seed predictions; only Overall reproduces. |
+| anki_miner: `~/Projects/anki_miner/.venv/bin/python` not found | Clone it there, or edit its `command` in [registry.toml](adapters/registry.toml). |
+| ichiran or jiten: `No such container` | Start its compose project ([ichiran](adapters/ichiran/README.md), [jiten](adapters/jiten/README.md)). |
 
 ## Contributing
 
-Contributions of any kind are welcome: a wrong gold label, a new tool, a fix.
-
-- New here? Start with [CONTRIBUTING.md](CONTRIBUTING.md).
-- The labeling rules: [SPEC.md](SPEC.md).
-- Code of Conduct: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
-- Security: [SECURITY.md](SECURITY.md).
-
-Bug reports, gold-label errors and new tools -> [Issues](https://github.com/0xzerolight/monosashi/issues).
-Questions and discussion -> [Discussions](https://github.com/0xzerolight/monosashi/discussions).
-
-## Acknowledgements
-
-monosashi stands on JMdict and JMnedict, jmdict-simplified, the corpora above, and the tools it measures, three of which lent it their test suites. The full credits are in [ATTRIBUTION.md](ATTRIBUTION.md).
+- [CONTRIBUTING.md](CONTRIBUTING.md), [Code of Conduct](CODE_OF_CONDUCT.md), [Security](SECURITY.md).
+- Bugs, gold-label errors, new tools -> [Issues](https://github.com/0xzerolight/monosashi/issues).
+- Questions -> [Discussions](https://github.com/0xzerolight/monosashi/discussions).
 
 ## License
 
-Code: GPL-3.0-or-later ([LICENSE](LICENSE)). Data: CC BY-SA 4.0 ([data/LICENSE](data/LICENSE)). Each record also keeps the license of its source text.
+Code: GPL-3.0-or-later ([LICENSE](LICENSE)). Data: CC BY-SA 4.0 ([data/LICENSE](data/LICENSE)), each record also under its source's license.
