@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-A yardstick for Japanese tokenizers, measured the way language-learning tools use them.
+A measurement tool for Japanese tokenizers.
 </p>
 
 <p align="center">
