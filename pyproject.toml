@@ -1,6 +1,6 @@
 [project]
 name = "monosashi"
-version = "0.1.0"
+version = "0.1.1"
 description = "A yardstick for Japanese tokenizers, measured the way learner tools use them"
 readme = "README.md"
 license = "GPL-3.0-or-later"

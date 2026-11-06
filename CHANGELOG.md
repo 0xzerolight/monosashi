@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-06
+
 ### Added
 - **Contributor guide, code of conduct and security policy.** CONTRIBUTING.md covers setup, the gate, fixing a gold label, changing the spec, adding a tool and the data rules; CODE_OF_CONDUCT.md is Anki Miner's Contributor Covenant 3.0; SECURITY.md takes reports through private advisories.
 - **Issue forms for bugs, wrong gold labels and new tools.** Blank issues are off; questions go to Discussions.
@@ -28,5 +30,6 @@ First version.
 - **Pinned JMdict and JMnedict (`monosashi jmdict build`).** Fetched from jmdict-simplified, sha256-checked and indexed locally; `monosashi jmdict lookup` and `monosashi candidates` read the index.
 - **Labeling pipeline (`monosashi pool`, `select`, `label`, `review`).** Category tagging and quotas, blind bundles for two labelers, agreement and the review queue, merge into `data/core`.
 
-[Unreleased]: https://github.com/0xzerolight/monosashi/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/0xzerolight/monosashi/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/0xzerolight/monosashi/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/0xzerolight/monosashi/releases/tag/v0.1.0

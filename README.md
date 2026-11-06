@@ -21,7 +21,7 @@ Please leave a ⭐ star if monosashi helped you - it helps others find it :).
 
 monosashi is a gold set of Japanese sentences labeled with learner word units, plus a harness that runs existing tokenizers on it and scores them. A learner word unit is what a learner would look up: a JMdict entry with its inflection chain, its dictionary form and its reading in context. The question it answers: which tool turns real text into correct flashcard words without post-processing?
 
-Version 0.1: 993 gold records under spec 0.5, nine tools. The overall scores, on the 687 records that are not from a tool's own test suite:
+Version 0.1.1: 993 gold records under spec 0.5, nine tools. The overall scores, on the 687 records that are not from a tool's own test suite:
 
 | tool | card-ready rate | junk rate (lower is better) | median ms |
 |---|--:|--:|--:|
