@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Changed
 - **anki_miner remeasured with four settings changed from its defaults.** Card-ready 76.6, up from 59.2; junk 4.4, down from 5.8. The adapter runs anki_miner at commit 0b66053 with number + counter cards on, pre-noun adjectives and conjunctions mined, and proper nouns and numerals not excluded: the user settings with the highest card-ready rate on this gold set. It also outputs a word at each of its occurrences in a sentence, not only the first. RESULTS.md notes the settings next to the scores.
+- **README rewritten,** with the overall results, the heavy adapters' requirements and a troubleshooting table, in Anki Miner's layout.
 
 ## [0.1.0] - 2026-10-27
 
