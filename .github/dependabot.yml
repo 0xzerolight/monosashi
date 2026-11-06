@@ -1,0 +1,15 @@
+version: 2
+updates:
+  # Actions only: the Python lockfile pins the light adapters' tools and
+  # dictionaries, which are part of the benchmark's results.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - ci
+    groups:
+      gh-actions:
+        patterns:
+          - "*"
