@@ -52,7 +52,7 @@ from typing import Any
 from monosashi.adapters.protocol import serve, to_hiragana
 
 # The pin in README.md.
-PINNED_COMMIT = "0b66053f809ce04a6ff1f1a4aadb10421cc582af"
+PINNED_COMMIT = "fa5e62e8db2b3a69d1a066be13a3171a2ab0942c"
 # The slot AnkiMinerConfig's default dictionary_chain points at.
 DICT_SLOT = "jmdict-english"
 # AnkiMinerConfig fields set over the defaults (module docstring).
