@@ -6,7 +6,7 @@
 
 | Source | Pin |
 |---|---|
-| anki_miner | commit `fa5e62e8db2b3a69d1a066be13a3171a2ab0942c` (2026-11-17), version 3.13.0 plus unreleased changes |
+| anki_miner | commit `844b937e31048d387eb1381ae4e07fe454b64f61` (2026-11-17), version 3.13.0 plus unreleased changes |
 | Tokenizer dictionary | unidic-lite 1.0.8 (UniDic 2.1.2), from anki_miner's venv |
 | JMdict | [jmdict-yomitan](https://github.com/yomidevs/jmdict-yomitan) release `2026-10-09`, `JMdict_english.zip`, 15,607,868 bytes, sha256 `ae45a789a7fd47f2a6f05c8d8238abf78c9352576fb7fe97cbc0e107c4fe173c` ("JMdict [2026-10-09]") |
 
@@ -18,7 +18,7 @@ The adapter runs in anki_miner's own venv at `~/Projects/anki_miner/.venv` (the 
 
 ```sh
 git clone https://github.com/0xzerolight/anki_miner.git ~/Projects/anki_miner
-cd ~/Projects/anki_miner && git checkout fa5e62e8db2b3a69d1a066be13a3171a2ab0942c
+cd ~/Projects/anki_miner && git checkout 844b937e31048d387eb1381ae4e07fe454b64f61
 python -m venv .venv && .venv/bin/pip install -e .
 ```
 
