@@ -26,7 +26,7 @@ Please leave a ⭐ star if monosashi helped you - it helps others find it :).
 | [jiten](https://github.com/Sirush/Jiten) | 85.1 | 10.8 | 4.72 |
 | [ichiran](https://github.com/tshatrov/ichiran) | 83.4 | 15.9 | 185.22 |
 | [himotoki](https://github.com/moikdev/himotoki-rs) | 82.7 | 17.3 | 3.76 |
-| [anki_miner](https://github.com/0xzerolight/anki_miner) | 77.6 | 4.2 | 2.05 |
+| [anki_miner](https://github.com/0xzerolight/anki_miner) | 80.8 | 4.6 | 2.19 |
 | [yomitan](https://github.com/yomidevs/yomitan) | 75.7 | 27.8 | 18.75 |
 | [sudachi-c](https://github.com/WorksApplications/sudachi.rs) | 61.4 | 27.0 | 0.04 |
 | [sudachi-a](https://github.com/WorksApplications/sudachi.rs) | 58.0 | 26.7 | 0.06 |

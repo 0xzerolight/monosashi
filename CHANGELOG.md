@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ## [Unreleased]
 
 ### Changed
-- **anki_miner remeasured at commit 844b937 (3.13.0 plus unreleased changes).** Card-ready 77.6, up from 76.6; junk 4.2, down from 4.4.
+- **anki_miner remeasured at commit 91e8619 (3.13.0 plus unreleased changes).** Card-ready 80.8, up from 76.6; junk 4.6, up from 4.4.
 
 ## [0.1.1] - 2026-11-06
 
