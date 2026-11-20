@@ -24,13 +24,13 @@ Please leave a ⭐ star if monosashi helped you - it helps others find it :).
 | tool | card-ready rate | junk rate (lower is better) | median ms |
 |---|--:|--:|--:|
 | [jiten](https://github.com/Sirush/Jiten) | 85.1 | 10.8 | 4.72 |
-| [ichiran](https://github.com/tshatrov/ichiran) | 83.4 | 15.9 | 185.22 |
-| [anki_miner](https://github.com/0xzerolight/anki_miner) | 83.1 | 4.3 | 1.44 |
-| [himotoki](https://github.com/moikdev/himotoki-rs) | 82.7 | 17.3 | 3.76 |
+| [ichiran](https://github.com/tshatrov/ichiran) | 83.5 | 15.9 | 185.22 |
+| [anki_miner](https://github.com/0xzerolight/anki_miner) | 83.1 | 4.4 | 1.44 |
+| [himotoki](https://github.com/moikdev/himotoki-rs) | 82.9 | 17.3 | 3.76 |
 | [yomitan](https://github.com/yomidevs/yomitan) | 75.7 | 27.8 | 18.75 |
-| [sudachi-c](https://github.com/WorksApplications/sudachi.rs) | 61.4 | 27.0 | 0.04 |
+| [sudachi-c](https://github.com/WorksApplications/sudachi.rs) | 61.4 | 27.1 | 0.04 |
 | [sudachi-a](https://github.com/WorksApplications/sudachi.rs) | 58.0 | 26.7 | 0.06 |
-| [unidic3](https://github.com/polm/unidic-py) | 56.9 | 28.2 | 0.31 |
+| [unidic3](https://github.com/polm/unidic-py) | 56.8 | 28.2 | 0.31 |
 | [fugashi-unidic-lite](https://github.com/polm/fugashi) | 56.6 | 28.2 | 0.18 |
 
 687 records; the tools' own test sentences are left out. Card-ready: gold words output with the right span, form and reading. Junk: output words that match no gold word. Full tables: [RESULTS.md](RESULTS.md). Labeling rules: [SPEC.md](SPEC.md).

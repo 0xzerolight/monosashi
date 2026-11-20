@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ### Changed
 - **anki_miner remeasured at commit 17d3c96 (3.13.0 plus unreleased changes).** Card-ready 83.1, up from 76.6; junk 4.3, down from 4.4.
 
+### Fixed
+- **Gold labels audited record by record: 107 fixes in 95 of the 993 records.** Every record was reread against SPEC.md 0.5 with each tool's output beside it. 18 fixes change a unit a score reads (boundaries such as わけ|ねー -> わけねー and 指揮せざる|を|えない -> 指揮|せざるをえない, readings such as その後 そのご -> そのあと, a clock-time 30分, 番地 and 元 as affixes); the rest are category tags (73), split points (4) and particle-versus-copula labels (12). RESULTS.md and the README table are rescored: no card-ready rate moves by more than 0.2 points (ichiran 83.5, himotoki 82.9, unidic3 56.8) and the order is unchanged; anki_miner's junk rate reads 4.4.
+
 ## [0.1.1] - 2026-11-06
 
 ### Added
