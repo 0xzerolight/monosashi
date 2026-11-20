@@ -29,6 +29,7 @@ BOOTSTRAP_SEED = 20261015
 METRICS = {
     "card": "card-ready rate, strict",
     "card_lenient": "card-ready rate, lenient",
+    "start": "right word at the right start",
     "junk": "junk rate (lower is better)",
     "seg": "segmentation F1, strict",
     "seg_lenient": "segmentation F1, lenient (boundaries)",
@@ -48,6 +49,9 @@ VOICE_TRANSFORMS = frozenset({"potential", "potential or passive", "passive", "c
 # A chain starting with these accepts the entry it passes through too: 多い + -すぎる accepts
 # 多すぎる, 恥ずかしい + -がる accepts 恥ずかしがる (§7 Derived verbs).
 PASSED_THROUGH = VOICE_TRANSFORMS | {"-すぎる", "-がる"}
+# Gold function kinds whose units are dictionary words all the same: a tool that offers one as a
+# word is charged no junk for it (§7 Junk rate).
+NO_CARD_KINDS = frozenset({"suffix", "prefix", "copula"})
 
 
 def _hira(text: str | None) -> str | None:
@@ -173,6 +177,9 @@ class Scorer:
         A spelling of a normalized entry brings the normalized form_reading
         (すごい, すごい for すげー), and the noun + する form brings the gold
         form_reading + する (勉強する, べんきょうする), so a coherent card passes.
+        So does any other reading the entry gives the tool's spelling (明日: あした
+        or あす): the gold one is only the labelers' tie-break (§5). A unit tagged
+        ``heteronym`` takes the gold reading alone, since there a sense picks it.
         """
         reading = _hira(form_reading)
         if reading is None or unit.form_reading is None:
@@ -184,7 +191,17 @@ class Scorer:
         normalized = unit.normalized
         if normalized and reading == normalized.form_reading and widen(form) in self.normalized_forms(unit):
             return True
-        return reading == unit.form_reading + SURU and widen(form) == self._suru_form(unit)
+        if reading == unit.form_reading + SURU and widen(form) == self._suru_form(unit):
+            return True
+        return "heteronym" not in unit.targets and self._entry_reads(unit, form, reading)
+
+    def _entry_reads(self, unit: Unit, form: str, reading: str) -> bool:
+        """``reading`` is one an accepted entry gives the spelling ``form`` (the する form as its noun)."""
+        if widen(form) == self._suru_form(unit):
+            if not reading.endswith(SURU):
+                return False
+            form, reading = form[: -len(SURU)], reading[: -len(SURU)]
+        return any(reading in e.readings_of(form) for e in self._accepted_entries(unit))
 
     def _one_entry(self, unit: Unit, form: str, form_reading: str) -> bool:
         """The form and form_reading are a spelling and a reading of one accepted entry (§7).
@@ -297,6 +314,16 @@ class Scorer:
             )
         return self._card_pair_ok(g, u.form, u.form_reading)
 
+    def word_at_start(self, g: Unit, u: PredictedUnit, fields: Collection[str] = OPTIONAL_FIELDS) -> bool:
+        """Whether ``u`` starts where ``g`` does and names its word, wherever ``u`` ends (§7).
+
+        食べ of 食べ|させ|られ|なかっ|た names 食べる at the right place: the word is found,
+        though the unit is no card. Only a unit the tool offers as content counts, as for a card.
+        """
+        if ("kind" in fields and u.kind in FUNCTION_KINDS) or u.start != g.start:
+            return False
+        return self._card_pair_ok(g, u.form, u.form_reading)
+
     def record_counts(self, record: Record, prediction: Prediction | None, tool: _Tool) -> Counter[str]:
         text = record.text
         c: Counter[str] = Counter()
@@ -347,6 +374,10 @@ class Scorer:
                 ok = any(self.card_ok(g, u, tool.fields) for u in pred if u.start == g.start)
                 c["card.n"] += 1
                 c["card.ok"] += ok
+                c["start.n"] += 1
+                c["start.ok"] += ok or any(
+                    self.word_at_start(g, u, tool.fields) for u in pred if u.start == g.start
+                )
                 pieces = tiles(g)
                 cut_at_splits = (
                     exact is None
@@ -394,9 +425,14 @@ class Scorer:
                 )
 
         # Junk: content units that are no gold content unit and no piece of an accepted split.
-        c["junk.n"] += len(content_pred)
+        # A unit that is exactly a gold affix or copula (先生 of 田中先生, だらけ, 元, だった) is a
+        # dictionary word gold gives no card: it is left out, neither junk nor a match. A particle
+        # offered as a card is junk.
+        no_card_spans = {(u.start, u.end) for u in gold if u.kind in NO_CARD_KINDS}
+        offered = [u for u in content_pred if (u.start, u.end) not in no_card_spans]
+        c["junk.n"] += len(offered)
         c["junk.ok"] += sum(
-            1 for u in content_pred if (u.start, u.end) not in content_gold_spans and not split_piece(u)
+            1 for u in offered if (u.start, u.end) not in content_gold_spans and not split_piece(u)
         )
 
         # Content-unit F1.
@@ -515,7 +551,7 @@ def score_tool(
     return ToolScores(name, description, list(records), by_id, counts)
 
 
-UNIT_METRICS = ("card", "card_lenient", "form", "reading", "form_reading", "form_tiled", "reading_tiled",
+UNIT_METRICS = ("card", "card_lenient", "start", "form", "reading", "form_reading", "form_tiled", "reading_tiled",
                 "form_reading_tiled", "entry", "normalized")  # fmt: skip
 
 

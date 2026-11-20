@@ -1,7 +1,7 @@
 [project]
 name = "monosashi"
 version = "0.1.1"
-description = "A measurement tool for Japanese tokenizers"
+description = "A measurement tool for learner word lookup in Japanese"
 readme = "README.md"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE", "data/LICENSE"]

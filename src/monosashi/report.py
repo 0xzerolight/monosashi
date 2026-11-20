@@ -136,7 +136,7 @@ def render(scorer: Scorer, tools: Sequence[ToolScores], *, samples: int = 1000) 
     records = tools[0].records
     seeds = [r for r in records if r.slice == "seed"]
     lines = [f"# Results (spec {SPEC_VERSION})", ""]
-    lines += [f"Gold records: {len(records)}. Seeds: {len(seeds)}, left out of Overall and scored by suite. "
+    lines += [f"Gold records: {len(records)}. Seeds: {len(seeds)}, scored by suite and left out of every other table but By slice. "
              "Percentages; 95% bootstrap intervals in parentheses; coverage of exact or tiled spans in "
              "brackets. Median ms is measured inside each adapter, overhead included.", ""]  # fmt: skip
 
@@ -184,8 +184,8 @@ def render(scorer: Scorer, tools: Sequence[ToolScores], *, samples: int = 1000) 
     else:
         lines += ["", "## Seed suites", "", "No seed records."]
     lines += _breakdown(
-        "By category (target units only)",
-        [(c, [category_scores(scorer, t, c) for t in tools]) for c in CATEGORIES],
+        "By category (target units only, seeds left out)",
+        [(c, [category_scores(scorer, t, c) for t in overall]) for c in CATEGORIES],
         tools,
     )
     lines += _breakdown(

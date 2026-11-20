@@ -6,8 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+### Added
+- **A second measure beside the card-ready rate: the right word at the right start.** The gold word's dictionary form and reading on a unit that starts in the right place, wherever the tool ends it (食べ of 食べ|させ|られ|なかっ|た finds 食べる). It separates "wrong word" from "unit ends elsewhere": Sudachi mode C scores 61.8 card-ready and 74.3 on this; Jiten 85.4 and 87.6.
+
 ### Changed
 - **anki_miner remeasured at commit 17d3c96 (3.13.0 plus unreleased changes).** Card-ready 83.1, up from 76.6; junk 4.3, down from 4.4.
+- **A second right reading passes.** Any reading the entry gives the tool's spelling is accepted as its dictionary reading (明日 read あす, 行く read ゆく), except on a unit tagged `heteronym`, where a sense picks the reading. Card-ready rises 0.2 to 0.7 points per tool.
+- **A gold suffix, prefix or copula offered as a word is no longer junk.** 先生 in 田中先生, だらけ, 元 and だった are dictionary words that gold gives no card; they are left out of the junk count. A particle offered as a card is still junk. Junk falls 0.5 to 1.8 points per tool.
+- **The category table leaves out the tools' own test sentences,** as the overall row does, so `results/` now reproduces it.
+- **The README calls monosashi a measurement of learner word lookup, not of tokenizers,** and its table shows the new measure.
 
 ### Fixed
 - **Gold labels audited record by record: 107 fixes in 95 of the 993 records.** Every record was reread against SPEC.md 0.5 with each tool's output beside it. 18 fixes change a unit a score reads (boundaries such as わけ|ねー -> わけねー and 指揮せざる|を|えない -> 指揮|せざるをえない, readings such as その後 そのご -> そのあと, a clock-time 30分, 番地 and 元 as affixes); the rest are category tags (73), split points (4) and particle-versus-copula labels (12). RESULTS.md and the README table are rescored: no card-ready rate moves by more than 0.2 points (ichiran 83.5, himotoki 82.9, unidic3 56.8) and the order is unchanged; anki_miner's junk rate reads 4.4.

@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-A measurement tool for Japanese tokenizers.
+A measurement tool for learner word lookup in Japanese.
 </p>
 
 <p align="center">
@@ -19,21 +19,21 @@ Please leave a ⭐ star if monosashi helped you - it helps others find it :).
 
 # <p align="center">Results</p>
 
-993 Japanese sentences labeled with the words a learner would look up in JMdict, and a harness that scores tokenizers on them.
+993 Japanese sentences labeled with the words a learner would look up in JMdict, and a harness that scores how well tools find them.
 
-| tool | card-ready rate | junk rate (lower is better) | median ms |
-|---|--:|--:|--:|
-| [jiten](https://github.com/Sirush/Jiten) | 85.1 | 10.8 | 4.72 |
-| [ichiran](https://github.com/tshatrov/ichiran) | 83.5 | 15.9 | 185.22 |
-| [anki_miner](https://github.com/0xzerolight/anki_miner) | 83.1 | 4.4 | 1.44 |
-| [himotoki](https://github.com/moikdev/himotoki-rs) | 82.9 | 17.3 | 3.76 |
-| [yomitan](https://github.com/yomidevs/yomitan) | 75.7 | 27.8 | 18.75 |
-| [sudachi-c](https://github.com/WorksApplications/sudachi.rs) | 61.4 | 27.1 | 0.04 |
-| [sudachi-a](https://github.com/WorksApplications/sudachi.rs) | 58.0 | 26.7 | 0.06 |
-| [unidic3](https://github.com/polm/unidic-py) | 56.8 | 28.2 | 0.31 |
-| [fugashi-unidic-lite](https://github.com/polm/fugashi) | 56.6 | 28.2 | 0.18 |
+| tool | card-ready rate | right word at the right start | junk rate (lower is better) | median ms |
+|---|--:|--:|--:|--:|
+| [jiten](https://github.com/Sirush/Jiten) | 85.4 | 87.6 | 9.3 | 4.72 |
+| [ichiran](https://github.com/tshatrov/ichiran) | 83.8 | 85.3 | 14.1 | 185.22 |
+| [anki_miner](https://github.com/0xzerolight/anki_miner) | 83.4 | 83.8 | 3.4 | 1.44 |
+| [himotoki](https://github.com/moikdev/himotoki-rs) | 83.1 | 85.4 | 15.6 | 3.76 |
+| [yomitan](https://github.com/yomidevs/yomitan) | 76.4 | 77.5 | 26.3 | 18.75 |
+| [sudachi-c](https://github.com/WorksApplications/sudachi.rs) | 61.8 | 74.3 | 26.6 | 0.04 |
+| [sudachi-a](https://github.com/WorksApplications/sudachi.rs) | 58.4 | 70.3 | 26.1 | 0.06 |
+| [unidic3](https://github.com/polm/unidic-py) | 57.2 | 69.8 | 27.6 | 0.31 |
+| [fugashi-unidic-lite](https://github.com/polm/fugashi) | 56.9 | 69.6 | 27.6 | 0.18 |
 
-687 records; the tools' own test sentences are left out. Card-ready: gold words output with the right span, form and reading. Junk: output words that match no gold word. Full tables: [RESULTS.md](RESULTS.md). Labeling rules: [SPEC.md](SPEC.md).
+687 records; the tools' own test sentences are left out. Card-ready: gold words output with the right span, form and reading. Right word at the right start: the same form and reading on a unit that starts in the right place, wherever it ends. Junk: output words that match no gold word. Full tables: [RESULTS.md](RESULTS.md). Labeling rules: [SPEC.md](SPEC.md).
 
 ## Installation
 
@@ -88,6 +88,7 @@ uv run python scripts/seed_labels.py rebuild
 ## What it measures
 
 - **Card-ready rate** - strict, and lenient on accepted compound splits (一人|暮らし).
+- **Right word at the right start** - the word found, wherever the tool ends its unit.
 - **Junk rate** - output words that match no gold word.
 - **Segmentation** - span, boundary and content-unit F1.
 - **Form, reading and entry accuracy.**
@@ -121,7 +122,7 @@ Definitions: [SPEC.md §7](SPEC.md#7-how-labels-are-scored).
 |---|---|
 | `ModuleNotFoundError: fugashi` or `sudachipy` | Use `uv run --group adapters`; `uv sync` drops that group. |
 | `jmdict build`: sha256 mismatch | The upstream file changed; open an issue. |
-| Seed or category tables differ from RESULTS.md | `results/` has no seed predictions; only Overall reproduces. |
+| Seed tables differ from RESULTS.md | `results/` has no seed predictions: the seed-suite table and the seed row are missing; the other scores reproduce. |
 | anki_miner: `~/Projects/anki_miner/.venv/bin/python` not found | Clone it there, or edit its `command` in [registry.toml](adapters/registry.toml). |
 | ichiran or jiten: `No such container` | Start its compose project ([ichiran](adapters/ichiran/README.md), [jiten](adapters/jiten/README.md)). |
 

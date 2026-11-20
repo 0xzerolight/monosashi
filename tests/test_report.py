@@ -11,6 +11,7 @@ from monosashi.predictions import Description, PredictedUnit, Prediction
 from monosashi.report import render
 from monosashi.schema import Record, Unit, load_records
 from monosashi.score import METRICS, Scorer, ToolScores, score_tool
+from monosashi.taxonomy import CATEGORIES
 
 RECORDS = list(load_records(Path(__file__).parent / "fixtures" / "spec-examples.jsonl"))
 FULL = Description("full", "1", "test", "2026", True, ("form", "reading", "form_reading", "entries", "kind"))
@@ -119,6 +120,13 @@ def test_seeds_get_their_own_table_and_registers_state_their_composition(diction
     }
     slices = {row[0] for row in _section(text, "By slice")[1:]}
     assert slices == {"open (1)", "plain (1)", "seed (3)", f"synthetic ({synthetic})"}
+    # The category table leaves the seeds out too: a tool's own test sentences can't judge it.
+    categories = {row[0] for row in _section(text, "By category (target units only, seeds left out)")[1:]}
+    kept = [r for r in records if r.slice != "seed"]
+    assert categories == {
+        f"{c} ({sum(1 for r in kept if c in r.categories)})" for c in {c for r in kept for c in r.categories}
+    }
+    assert any(c in r.categories for r in records[:3] for c in CATEGORIES)  # the seeds do carry targets
     for phrase in ("threshold", "decision", "adopt", "contribute"):
         assert phrase not in text.lower(), phrase
 

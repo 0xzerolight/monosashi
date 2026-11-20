@@ -484,3 +484,56 @@ _INDEX: list[Path] = []
 def _remember_index(index_path: Path) -> None:
     if not _INDEX:
         _INDEX.append(index_path)
+
+
+def test_a_gold_affix_or_copula_offered_as_a_word_is_not_junk(dictionary: Dictionary) -> None:
+    # 田中|さん: さん is a suffix, a dictionary word gold gives no card. Offered as a word it is
+    # left out of the junk count; 田中 alone is counted, and matched.
+    r = EXAMPLES["spec-13"]
+    units = (
+        PredictedUnit(0, 2, "田中", kind="name"),
+        PredictedUnit(2, 4, "さん", "さん", "さん", "さん", (), "word"),
+    )
+    s = _score(dictionary, [r], [Prediction(r.id, units)])
+    assert (s.total()["junk.ok"], s.total()["junk.n"]) == (0, 1)
+    # お|仲間: the prefix お the same way, also for a tool with no kinds.
+    r = EXAMPLES["spec-16"]
+    units = (PredictedUnit(0, 1, "お", "お", None, "お"), PredictedUnit(1, 3, "仲間", "仲間", None, "なかま"))
+    s = _score(dictionary, [r], [Prediction(r.id, units)], CONTENT_ONLY)
+    assert (s.total()["junk.ok"], s.total()["junk.n"]) == (0, 1)
+
+
+def test_another_reading_of_the_entry_passes_unless_the_unit_is_a_heteronym(dictionary: Dictionary) -> None:
+    r = EXAMPLES["spec-04"]  # 行かなければ: 行く, gold form_reading いく; the entry also reads ゆく
+    iku = r.units[0]
+    yuku = replace(_from_gold(iku), form_reading="ゆく")
+    rest = tuple(_from_gold(u) for u in r.units[1:])
+    s = _score(dictionary, [r], [Prediction(r.id, (yuku, *rest))])
+    assert s.value("card") == 1.0 and s.value("form_reading") == 1.0
+    # A reading no entry gives the spelling still fails.
+    wrong = replace(yuku, form_reading="おこなう")
+    assert _score(dictionary, [r], [Prediction(r.id, (wrong, *rest))]).value("card") == 0.5
+    # Where a sense picks the reading, only the gold one passes.
+    tagged = replace(r, units=(replace(iku, targets=("heteronym",)), *r.units[1:]))
+    assert _score(dictionary, [tagged], [Prediction(r.id, (yuku, *rest))]).value("card") == 0.5
+
+
+def test_right_word_at_the_right_start_ignores_where_the_unit_ends(dictionary: Dictionary) -> None:
+    r = EXAMPLES["spec-01"]  # …始めてしまった, cut as 始め|て|しまっ|た
+    chain = r.units[-1]
+    pieces = (
+        PredictedUnit(9, 11, "始め", "始める", "はじめ", "はじめる", (), "word"),
+        PredictedUnit(11, 12, "て", "て", "て", "て", (), "particle"),
+        PredictedUnit(12, 15, "しまっ", "しまう", "しまっ", "しまう", (), "word"),
+        PredictedUnit(15, 16, "た", "た", "た", "た", (), "auxiliary"),
+    )
+    kept = tuple(_from_gold(u) for u in r.units[:-1])
+    s = _score(dictionary, [r], [Prediction(r.id, (*kept, *pieces))])
+    assert s.value("card") == pytest.approx(2 / 3)  # the chain is no card
+    assert s.value("start") == 1.0  # but 始める is found where the word starts
+    # A unit the tool marks as grammar finds nothing, as for a card.
+    marked = (replace(pieces[0], kind="auxiliary"), *pieces[1:])
+    assert _score(dictionary, [r], [Prediction(r.id, (*kept, *marked))]).value("start") == pytest.approx(
+        2 / 3
+    )
+    assert chain.form == "始める"
