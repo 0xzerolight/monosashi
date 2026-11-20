@@ -21,6 +21,7 @@ from monosashi.jmdict import JMDICT, JMNEDICT, Dictionary, Entry
 from monosashi.kana import has_kanji, is_symbol, read_inner_symbols, to_hiragana, widen
 from monosashi.predictions import FAILED, OPTIONAL_FIELDS, Description, PredictedUnit, Prediction, against
 from monosashi.schema import CONTENT_KINDS, FUNCTION_KINDS, Record, Unit
+from monosashi.taxonomy import COMPUTED, computed_categories
 
 BOOTSTRAP_SAMPLES = 1000
 BOOTSTRAP_SEED = 20261015
@@ -119,8 +120,8 @@ class Scorer:
         self.dictionary = dictionary
 
     def _accepted_entries(self, unit: Unit) -> list[Entry]:
-        """The unit's entries and its normalized entries (JMnedict for a name)."""
-        ids = (*unit.entries, *(unit.normalized.entries if unit.normalized else ()))
+        """The unit's entries, its normalized entries and its ``also`` entries (JMnedict for a name)."""
+        ids = (*unit.entries, *(unit.normalized.entries if unit.normalized else ()), *unit.also)
         return list(self.dictionary.entries(ids, JMNEDICT if unit.kind == "name" else JMDICT))
 
     def accepted_forms(self, unit: Unit) -> frozenset[str]:
@@ -179,7 +180,8 @@ class Scorer:
         form_reading + する (勉強する, べんきょうする), so a coherent card passes.
         So does any other reading the entry gives the tool's spelling (明日: あした
         or あす): the gold one is only the labelers' tie-break (§5). A unit tagged
-        ``heteronym`` takes the gold reading alone, since there a sense picks it.
+        ``heteronym`` takes the gold reading alone, since there a sense picks it, and
+        the readings of its ``also`` entries, which were picked by hand.
         """
         reading = _hira(form_reading)
         if reading is None or unit.form_reading is None:
@@ -193,15 +195,30 @@ class Scorer:
             return True
         if reading == unit.form_reading + SURU and widen(form) == self._suru_form(unit):
             return True
-        return "heteronym" not in unit.targets and self._entry_reads(unit, form, reading)
-
-    def _entry_reads(self, unit: Unit, form: str, reading: str) -> bool:
-        """``reading`` is one an accepted entry gives the spelling ``form`` (the する form as its noun)."""
+        if "heteronym" in unit.targets:
+            entries = list(self.dictionary.entries(unit.also, JMDICT))
+        else:
+            entries = self._accepted_entries(unit)
         if widen(form) == self._suru_form(unit):
             if not reading.endswith(SURU):
                 return False
             form, reading = form[: -len(SURU)], reading[: -len(SURU)]
-        return any(reading in e.readings_of(form) for e in self._accepted_entries(unit))
+        return any(reading in e.readings_of(form) for e in entries)
+
+    def joined_ok(self, unit: Unit, form: str | None, form_reading: str | None) -> bool:
+        """The form and form_reading are a spelling and a reading of one of the unit's joined
+        entries: 一度も, いちども for 一度 of 一度|も (§7 Other ways to pass)."""
+        if unit.joined is None or form is None or form_reading is None:
+            return False
+        reading = to_hiragana(form_reading)
+        entries = self.dictionary.entries(unit.joined.entries, JMDICT)
+        return any(reading in e.readings_of(form) for e in entries)
+
+    def in_category(self, unit: Unit, category: str) -> bool:
+        """The unit's targets name ``category``, or it is a computed one the unit stands for (§6)."""
+        if category not in COMPUTED:
+            return category in unit.targets
+        return category in computed_categories(unit, self.dictionary.entries(unit.entries, JMDICT))
 
     def _one_entry(self, unit: Unit, form: str, form_reading: str) -> bool:
         """The form and form_reading are a spelling and a reading of one accepted entry (§7).
@@ -231,9 +248,10 @@ class Scorer:
         accepts the derived verb: 行う with chain passive, -た accepts 行われる, read
         おこなわれる (``_card_pair_ok`` takes its other spellings). Both come from
         the deinflector's traces, spelling and reading through the same rules, so
-        each alternative is a pair (§7 Derived verbs).
+        each alternative is a pair (§7 Derived verbs). A unit with no entry has no
+        other verb: its form only looks derived (でける is no potential of でく).
         """
-        if unit.form is None or unit.form_reading is None:
+        if unit.form is None or unit.form_reading is None or not unit.entries:
             return frozenset()
         entries = self.dictionary.entries(unit.entries, JMDICT)
         spelled = {
@@ -285,10 +303,16 @@ class Scorer:
         if ("kind" in fields and u.kind in FUNCTION_KINDS) or u.start != g.start:
             return False
         if u.end != g.end:
+            if g.joined is not None and u.end == g.joined.end:
+                # The longer entry over the unit and the function units after it: 一度も for 一度|も.
+                return self.joined_ok(g, u.form, u.form_reading)
             # Noun + する: the noun alone, 勉強 for 勉強した.
             return u.end == self._noun_end(g) and self._card_pair_ok(g, u.form, u.form_reading)
         has_reading = "reading" in fields
         if not g.entries:
+            # ``also`` names the word behind a form no entry reaches: 帰る, かえる for 帰ろ.
+            if g.also and self._card_pair_ok(g, u.form, u.form_reading):
+                return True
             # No dictionary form to check: the reading in context, whatever the form. A tool
             # that outputs no reading stands in its form_reading where nothing inflects, and
             # the gold form with its form_reading where something does (ググった: ググる, ぐぐる).
@@ -414,7 +438,7 @@ class Scorer:
                         c["entry.mismatch"] += 1
                     else:
                         # An id of the other dictionary (a JMdict id for a name) is wrong, not a mismatch.
-                        allowed = {*g.entries, *(g.normalized.entries if g.normalized else ())}
+                        allowed = {*g.entries, *(g.normalized.entries if g.normalized else ()), *g.also}
                         c["entry.n"] += 1
                         c["entry.ok"] += first in allowed
             if g.normalized is not None and exact is not None and (tool.has("form") or tool.has("entries")):
@@ -424,16 +448,18 @@ class Scorer:
                     or (exact.entries and exact.entries[0] in g.normalized.entries)
                 )
 
-        # Junk: content units that are no gold content unit and no piece of an accepted split.
+        # Junk: content units that are no gold content unit, no accepted join of one (一度も over
+        # 一度|も) and no piece of an accepted split.
         # A unit that is exactly a gold affix or copula (先生 of 田中先生, だらけ, 元, だった) is a
         # dictionary word gold gives no card: it is left out, neither junk nor a match. A particle
         # offered as a card is junk.
         no_card_spans = {(u.start, u.end) for u in gold if u.kind in NO_CARD_KINDS}
         offered = [u for u in content_pred if (u.start, u.end) not in no_card_spans]
+        matching = content_gold_spans | {
+            (u.start, u.joined.end) for u in content_gold if u.joined is not None
+        }
         c["junk.n"] += len(offered)
-        c["junk.ok"] += sum(
-            1 for u in offered if (u.start, u.end) not in content_gold_spans and not split_piece(u)
-        )
+        c["junk.ok"] += sum(1 for u in offered if (u.start, u.end) not in matching and not split_piece(u))
 
         # Content-unit F1.
         matched = sum(1 for u in content_pred if (u.start, u.end) in content_gold_spans)
@@ -556,14 +582,15 @@ UNIT_METRICS = ("card", "card_lenient", "start", "form", "reading", "form_readin
 
 
 def category_scores(scorer: Scorer, scores: ToolScores, category: str) -> ToolScores:
-    """The same tool scored on the units whose targets name ``category`` (§7 Breakdowns).
+    """The same tool scored on the units that stand for ``category``: their targets name it, or
+    it is computed from them (§7 Breakdowns).
 
     Only unit metrics count here; segmentation and junk are about whole records.
     """
     tool = _Tool(frozenset(scores.description.fields), scores.description.partition)
     records, counts = [], []
     for record in scores.records:
-        units = tuple(u for u in record.units if category in u.targets)
+        units = tuple(u for u in record.units if scorer.in_category(u, category))
         if not units:
             continue
         c = scorer.record_counts(replace(record, units=units), scores.predictions.get(record.id), tool)

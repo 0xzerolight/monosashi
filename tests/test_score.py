@@ -537,3 +537,80 @@ def test_right_word_at_the_right_start_ignores_where_the_unit_ends(dictionary: D
         2 / 3
     )
     assert chain.form == "始める"
+
+
+def test_an_also_entry_is_a_second_right_answer(dictionary: Dictionary) -> None:
+    r = EXAMPLES["spec-29"]  # 信じられない: 信じる with its chain, also the adjective 信じられない
+    (gold,) = r.units
+    own = PredictedUnit(
+        0, 6, "信じられない", "信じられない", "しんじられない", "しんじられない", (2827068,), "word"
+    )
+    s = _score(dictionary, [r], [Prediction(r.id, (own,))])
+    assert s.value("card") == s.value("form") == s.value("form_reading") == s.value("entry") == 1.0
+    assert _score(dictionary, [r], [perfect(r)]).value("card") == 1.0  # 信じる still passes
+    # The two entries don't mix: 信じられない read しんじる is no pair.
+    mixed = replace(own, form_reading="しんじる")
+    assert _score(dictionary, [r], [Prediction(r.id, (mixed,))]).value("card") == 0.0
+    # Without the field the adjective is a wrong answer.
+    bare = replace(r, units=(replace(gold, also=()),))
+    assert _score(dictionary, [bare], [Prediction(r.id, (own,))]).value("card") == 0.0
+    # On a heteronym only the gold reading passes, and the readings of the also entries.
+    tagged = replace(r, units=(replace(gold, targets=("heteronym",)),))
+    assert _score(dictionary, [tagged], [Prediction(r.id, (own,))]).value("card") == 1.0
+
+
+def test_also_names_the_word_behind_a_unit_with_no_entry(dictionary: Dictionary) -> None:
+    kaero = Unit(0, 2, "帰ろ", "word", (), "帰ろ", "かえろ", "かえろ", targets=("contraction",))
+    listed = replace(kaero, also=(1221270,))
+    scorer = Scorer(dictionary)
+    kaeru = PredictedUnit(0, 2, "帰ろ", "帰る", None, "かえる")  # a tool with no reading names 帰る
+    assert scorer.card_ok(listed, kaeru, NO_READING)
+    assert not scorer.card_ok(kaero, kaeru, NO_READING)
+    # The reading in context still passes, whatever the form.
+    assert scorer.card_ok(listed, PredictedUnit(0, 2, "帰ろ", "帰ろ", "かえろ", "かえろ"))
+    # Another word is still wrong: 買う is not the word behind 帰ろ.
+    assert not scorer.card_ok(listed, PredictedUnit(0, 2, "帰ろ", "買う", None, "かう"), NO_READING)
+    # A form with no entry that only looks derived brings no base verb: 使える alone, no 使う.
+    assert scorer.voice_alternatives(replace(TSUKAENAI, entries=())) == frozenset()
+    assert scorer.voice_alternatives(TSUKAENAI)
+
+
+def test_a_joined_entry_passes_over_the_unit_and_its_particle(dictionary: Dictionary) -> None:
+    r = EXAMPLES["spec-30"]  # 一度|も|見ない, joined: 一度も
+    ichido, _, minai = r.units
+    joined = PredictedUnit(0, 3, "一度も", "一度も", "いちども", "いちども", (2266600,), "expression")
+    s = _score(dictionary, [r], [Prediction(r.id, (joined, _from_gold(minai)))])
+    assert s.value("card") == s.value("start") == 1.0
+    assert s.value("junk") == 0.0
+    assert s.value("seg") == pytest.approx(0.4)  # the units are still gold's: segmentation is strict
+    # The longer span needs the joined entry: 一度 as its form is no card, but the span is no junk.
+    short = replace(joined, form="一度", form_reading="いちど")
+    s = _score(dictionary, [r], [Prediction(r.id, (short, _from_gold(minai)))])
+    assert s.value("card") == 0.5 and s.value("junk") == 0.0
+    # Without the block, joining fails and the joined unit is junk.
+    bare = replace(r, units=(replace(ichido, joined=None), *r.units[1:]))
+    s = _score(dictionary, [bare], [Prediction(r.id, (joined, _from_gold(minai)))])
+    assert s.value("card") == 0.5 and s.value("junk") == 0.5
+    assert _score(dictionary, [r], [perfect(r)]).value("card") == 1.0
+
+
+def test_katakana_and_kana_written_are_computed(dictionary: Dictionary) -> None:
+    scorer = Scorer(dictionary)
+
+    def word(surface: str, kind: str = "word", entries: tuple[int, ...] = ()) -> Unit:
+        return Unit(0, len(surface), surface, kind, entries, surface, "あ", "あ")
+
+    for surface, expected in (("アイス", True), ("カー", True), ("ゲー廃", True), ("下さいッ", False)):
+        assert scorer.in_category(word(surface), "katakana") is expected, surface
+    assert not scorer.in_category(word("トム", "name"), "katakana")
+    sugoi = EXAMPLES["spec-11"].units[0]  # すご〜い: its entry has the common kanji spelling 凄い
+    assert not sugoi.targets or "kana-written" not in sugoi.targets
+    assert scorer.in_category(sugoi, "kana-written")
+    assert not scorer.in_category(replace(sugoi, surface="スゴイ"), "kana-written")  # not hiragana
+    assert not scorer.in_category(replace(sugoi, entries=()), "kana-written")
+    assert not scorer.in_category(EXAMPLES["spec-01"].units[0], "kana-written")  # 彼女 is in kanji
+    # The category table scores the units a computed category covers.
+    r = EXAMPLES["spec-11"]
+    scores = category_scores(scorer, _score(dictionary, [r], [perfect(r)]), "kana-written")
+    assert [x.id for x in scores.records] == [r.id] and scores.value("card") == 1.0
+    assert scorer.in_category(EXAMPLES["spec-01"].units[2], "compound")  # tagged categories as before

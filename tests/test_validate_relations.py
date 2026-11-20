@@ -422,7 +422,7 @@ CASES: dict[str, tuple[str, Any, set[str]]] = {
                 "エールフランス",
                 "えーるふらんす",
                 "えーるふらんす",
-                targets=["name", "katakana"],
+                targets=["name"],
             )
         ],
         set(),

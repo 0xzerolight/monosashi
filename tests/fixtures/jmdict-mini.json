@@ -14950,6 +14950,79 @@
 ]
 },
 {
+"id": "1359040",
+"kanji": [
+{
+"common": true,
+"text": "信じる",
+"tags": []
+}
+],
+"kana": [
+{
+"common": true,
+"text": "しんじる",
+"tags": [],
+"appliesToKanji": [
+"*"
+]
+}
+],
+"sense": [
+{
+"partOfSpeech": [
+"v1",
+"vt"
+],
+"appliesToKanji": [
+"*"
+],
+"appliesToKana": [
+"*"
+],
+"related": [],
+"antonym": [],
+"field": [],
+"dialect": [],
+"misc": [],
+"info": [],
+"languageSource": [],
+"gloss": [
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "to believe"
+},
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "to believe in"
+},
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "to place trust in"
+},
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "to confide in"
+},
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "to have faith in"
+}
+]
+}
+]
+},
+{
 "id": "1366410",
 "kanji": [
 {
@@ -25147,6 +25220,170 @@
 "gender": null,
 "type": null,
 "text": "simply"
+}
+]
+}
+]
+},
+{
+"id": "1576250",
+"kanji": [
+{
+"common": true,
+"text": "一度",
+"tags": []
+},
+{
+"common": false,
+"text": "１度",
+"tags": []
+},
+{
+"common": false,
+"text": "一たび",
+"tags": []
+},
+{
+"common": false,
+"text": "ひと度",
+"tags": []
+},
+{
+"common": false,
+"text": "一とたび",
+"tags": [
+"io"
+]
+}
+],
+"kana": [
+{
+"common": true,
+"text": "いちど",
+"tags": [],
+"appliesToKanji": [
+"一度",
+"１度"
+]
+},
+{
+"common": false,
+"text": "ひとたび",
+"tags": [],
+"appliesToKanji": [
+"*"
+]
+}
+],
+"sense": [
+{
+"partOfSpeech": [
+"n",
+"adv"
+],
+"appliesToKanji": [
+"*"
+],
+"appliesToKana": [
+"*"
+],
+"related": [],
+"antonym": [],
+"field": [],
+"dialect": [],
+"misc": [],
+"info": [],
+"languageSource": [],
+"gloss": [
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "once"
+},
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "one time"
+},
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "on one occasion"
+}
+]
+},
+{
+"partOfSpeech": [
+"n",
+"adv"
+],
+"appliesToKanji": [
+"*"
+],
+"appliesToKana": [
+"ひとたび"
+],
+"related": [],
+"antonym": [],
+"field": [],
+"dialect": [],
+"misc": [],
+"info": [],
+"languageSource": [],
+"gloss": [
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "temporarily"
+},
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "for a moment"
+}
+]
+},
+{
+"partOfSpeech": [
+"n",
+"adv"
+],
+"appliesToKanji": [
+"*"
+],
+"appliesToKana": [
+"いちど"
+],
+"related": [],
+"antonym": [],
+"field": [],
+"dialect": [],
+"misc": [],
+"info": [],
+"languageSource": [],
+"gloss": [
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "one degree"
+},
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "one tone"
+},
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "one musical interval"
 }
 ]
 }
@@ -39483,6 +39720,67 @@
 ]
 },
 {
+"id": "2266600",
+"kanji": [
+{
+"common": false,
+"text": "一度も",
+"tags": []
+},
+{
+"common": false,
+"text": "１度も",
+"tags": []
+}
+],
+"kana": [
+{
+"common": false,
+"text": "いちども",
+"tags": [],
+"appliesToKanji": [
+"*"
+]
+}
+],
+"sense": [
+{
+"partOfSpeech": [
+"exp"
+],
+"appliesToKanji": [
+"*"
+],
+"appliesToKana": [
+"*"
+],
+"related": [],
+"antonym": [],
+"field": [],
+"dialect": [],
+"misc": [],
+"info": [
+"with neg. verb"
+],
+"languageSource": [],
+"gloss": [
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "(not) even once"
+},
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "(not) ever"
+}
+]
+}
+]
+},
+{
 "id": "2266990",
 "kanji": [
 {
@@ -43377,6 +43675,71 @@
 "gender": null,
 "type": null,
 "text": "widower"
+}
+]
+}
+]
+},
+{
+"id": "2827068",
+"kanji": [
+{
+"common": false,
+"text": "信じられない",
+"tags": []
+}
+],
+"kana": [
+{
+"common": false,
+"text": "しんじられない",
+"tags": [],
+"appliesToKanji": [
+"*"
+]
+}
+],
+"sense": [
+{
+"partOfSpeech": [
+"adj-i"
+],
+"appliesToKanji": [
+"*"
+],
+"appliesToKana": [
+"*"
+],
+"related": [
+[
+"信じる",
+"しんじる"
+]
+],
+"antonym": [],
+"field": [],
+"dialect": [],
+"misc": [],
+"info": [],
+"languageSource": [],
+"gloss": [
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "incredible"
+},
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "unbelievable"
+},
+{
+"lang": "eng",
+"gender": null,
+"type": null,
+"text": "implausible"
 }
 ]
 }

@@ -67,12 +67,39 @@ BREAKAGES: dict[str, Callable[[Data], None]] = {
     "function-normalized": lambda d: _unit(d, 1).update(
         normalized={"form": "は", "form_reading": "は", "entries": [2028920]}
     ),
+    "also-entries": lambda d: _unit(d, 0).update(also=[1483150]),
+    "joined-span": lambda d: _unit(d, 0).update(joined={"end": 8, "entries": [1483150]}),
+    "joined-entries": lambda d: _unit(d, 0).update(joined={"end": 3, "entries": [1483150]}),
 }
 
 
 @pytest.mark.parametrize("rule", sorted(BREAKAGES))
 def test_each_rule_catches_its_breakage(rule: str, dictionary: Dictionary) -> None:
     assert rule in rules(_break(BREAKAGES[rule]), dictionary)
+
+
+def _with(index: int, **fields: Any) -> Data:
+    """The correct record with ``fields`` set on one unit."""
+    data = copy.deepcopy(hajimete_shimatta())
+    _unit(data, index).update(fields)
+    return data
+
+
+def test_a_computed_category_is_never_tagged(dictionary: Dictionary) -> None:
+    for category in ("katakana", "kana-written"):
+        assert "targets" in rules(_with(0, targets=[category]), dictionary)
+
+
+def test_also_and_joined_need_a_card_unit_and_real_entries(dictionary: Dictionary) -> None:
+    # は is a particle: it lists no other entries and starts no join.
+    assert "also-entries" in rules(_with(1, also=[1483150]), dictionary)
+    assert "joined-span" in rules(_with(1, joined={"end": 8, "entries": [1483150]}), dictionary)
+    for also in ([1999999], [1483070, 1483070]):  # not in the pin; listed twice
+        assert "also-entries" in rules(_with(0, also=also), dictionary)
+    assert rules(_with(0, also=[1483070]), dictionary) == set()
+    # A join ends with a function unit: 彼女 can't stop at its own end.
+    assert "joined-span" in rules(_with(0, joined={"end": 2, "entries": [1483150]}), dictionary)
+    assert "joined-entries" in rules(_with(0, joined={"end": 3, "entries": []}), dictionary)
 
 
 def test_overlapping_units_are_out_of_order(dictionary: Dictionary) -> None:

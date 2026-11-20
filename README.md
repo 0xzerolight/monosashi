@@ -23,15 +23,15 @@ Please leave a ⭐ star if monosashi helped you - it helps others find it :).
 
 | tool | card-ready rate | right word at the right start | junk rate (lower is better) | median ms |
 |---|--:|--:|--:|--:|
-| [jiten](https://github.com/Sirush/Jiten) | 85.4 | 87.6 | 9.3 | 4.72 |
-| [ichiran](https://github.com/tshatrov/ichiran) | 83.8 | 85.3 | 14.1 | 185.22 |
-| [anki_miner](https://github.com/0xzerolight/anki_miner) | 83.4 | 83.8 | 3.4 | 1.44 |
-| [himotoki](https://github.com/moikdev/himotoki-rs) | 83.1 | 85.4 | 15.6 | 3.76 |
-| [yomitan](https://github.com/yomidevs/yomitan) | 76.4 | 77.5 | 26.3 | 18.75 |
-| [sudachi-c](https://github.com/WorksApplications/sudachi.rs) | 61.8 | 74.3 | 26.6 | 0.04 |
-| [sudachi-a](https://github.com/WorksApplications/sudachi.rs) | 58.4 | 70.3 | 26.1 | 0.06 |
-| [unidic3](https://github.com/polm/unidic-py) | 57.2 | 69.8 | 27.6 | 0.31 |
-| [fugashi-unidic-lite](https://github.com/polm/fugashi) | 56.9 | 69.6 | 27.6 | 0.18 |
+| [jiten](https://github.com/Sirush/Jiten) | 86.0 | 88.2 | 9.2 | 4.72 |
+| [ichiran](https://github.com/tshatrov/ichiran) | 84.1 | 85.7 | 14.1 | 185.22 |
+| [anki_miner](https://github.com/0xzerolight/anki_miner) | 83.8 | 84.2 | 3.4 | 1.44 |
+| [himotoki](https://github.com/moikdev/himotoki-rs) | 83.4 | 85.7 | 15.6 | 3.76 |
+| [yomitan](https://github.com/yomidevs/yomitan) | 76.9 | 78.1 | 26.2 | 18.75 |
+| [sudachi-c](https://github.com/WorksApplications/sudachi.rs) | 61.9 | 74.7 | 26.6 | 0.04 |
+| [sudachi-a](https://github.com/WorksApplications/sudachi.rs) | 58.4 | 70.7 | 26.1 | 0.06 |
+| [unidic3](https://github.com/polm/unidic-py) | 57.3 | 70.2 | 27.6 | 0.31 |
+| [fugashi-unidic-lite](https://github.com/polm/fugashi) | 57.0 | 70.0 | 27.6 | 0.18 |
 
 687 records; the tools' own test sentences are left out. Card-ready: gold words output with the right span, form and reading. Right word at the right start: the same form and reading on a unit that starts in the right place, wherever it ends. Junk: output words that match no gold word. Full tables: [RESULTS.md](RESULTS.md). Labeling rules: [SPEC.md](SPEC.md).
 

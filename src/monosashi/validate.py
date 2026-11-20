@@ -55,7 +55,7 @@ from monosashi.schema import (
     Unit,
     load_records,
 )
-from monosashi.taxonomy import CATEGORIES
+from monosashi.taxonomy import CATEGORIES, COMPUTED
 
 # Rules that flag a label for review but never fail it (SPEC.md §8).
 ADVISORY_RULES = frozenset({"counter-whole-entry"})
@@ -209,9 +209,48 @@ def _check_unit_fields(record: Record, i: int, unit: Unit) -> Iterable[Issue]:
     for target in unit.targets:
         if target not in CATEGORIES:
             yield issue("targets", f"unknown category {target!r}")
+        elif target in COMPUTED:
+            yield issue("targets", f"{target!r} is computed when scoring and never tagged (SPEC.md §6)")
     unknown = sorted(set(unit.chain) - transform_ids())
     if unknown:
         yield issue("chain-ids", f"unknown transform id(s) {', '.join(unknown)}")
+
+
+def _check_alternatives(record: Record, i: int, unit: Unit, dictionary: Dictionary) -> Iterable[Issue]:
+    """``also`` and ``joined``, the other right answers a unit may list (SPEC.md §5)."""
+
+    def issue(rule: str, message: str) -> Issue:
+        return Issue(record.id, i, rule, message)
+
+    card = unit.kind in CONTENT_KINDS - {"name"}
+    if unit.also:
+        own = {*unit.entries, *(unit.normalized.entries if unit.normalized else ())}
+        if not card:
+            yield issue("also-entries", "only a word, expression or interjection unit lists `also` entries")
+        elif len(set(unit.also)) != len(unit.also) or own & set(unit.also):
+            yield issue("also-entries", "an `also` id is listed twice or is one of the unit's own entries")
+        elif len(list(dictionary.entries(unit.also))) != len(unit.also):
+            yield issue("also-entries", "an `also` id is not in the pinned JMdict")
+    joined = unit.joined
+    if joined is None:
+        return
+    # The join runs from the unit through the function units right after it, and ends with one.
+    end = unit.end
+    for following in record.units[i + 1 :]:
+        if following.start != end or following.kind not in FUNCTION_KINDS or end >= joined.end:
+            break
+        end = following.end
+    if not card or end != joined.end or joined.end <= unit.end:
+        yield issue(
+            "joined-span",
+            f"`joined.end` {joined.end} must be where a function unit after this word, expression or"
+            " interjection ends, with only function units in between",
+        )
+        return
+    entries = list(dictionary.entries(joined.entries))
+    text = record.text[unit.start : joined.end]
+    if not entries or len(entries) != len(joined.entries) or not _reach(text, entries).expected:
+        yield issue("joined-entries", f"{text!r} is not a form of the joined entries {list(joined.entries)}")
 
 
 def _check_orthography(record: Record, i: int, unit: Unit) -> Iterable[Issue]:
@@ -588,6 +627,7 @@ def validate_record(record: Record, dictionary: Dictionary) -> list[Issue]:
     for i, unit in enumerate(units):
         issues += _check_unit_fields(record, i, unit)
         issues += _check_orthography(record, i, unit)
+        issues += _check_alternatives(record, i, unit, dictionary)
         if unit.kind in UNIT_KINDS:
             previous = units[i - 1] if i else None
             next_unit = units[i + 1] if i + 1 < len(units) else None

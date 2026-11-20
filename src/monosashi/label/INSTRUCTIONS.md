@@ -25,8 +25,9 @@ Record ids are opaque (`RUN-0001`), and `source`, `register` and `slice` are pla
 1. Decide the correct reading of the whole sentence in context first. A sentence too short to settle a reading takes the most frequent one (SPEC §5).
 2. Cut it into units by SPEC §4: inflection chains as far as the deinflector carries them (the sheet's `chain=`), noun + する as one unit, the longest JMdict entry whose senses fit, numbers with their counters, names, words JMdict lacks. Punctuation, symbols and spaces belong to no unit.
 3. Fill each unit's fields by SPEC §5. Take `entries`, `form`, `chain` and readings from the sheet whenever a candidate fits; when you are sure no candidate fits, follow §4.7 (no entry). Function units (`particle`, `copula`, `auxiliary`, `prefix`, `suffix`) have only `start`, `end`, `surface` and `kind`.
-4. `targets`: tag every unit from the SPEC §6 definitions. The hints on the sheet are only suggestions: keep a hint's category on the unit that carries it when the definition fits, drop it when it doesn't, and add a category no hint names wherever a unit stands for it.
+4. `targets`: tag every unit from the SPEC §6 definitions. The hints on the sheet are only suggestions: keep a hint's category on the unit that carries it when the definition fits, drop it when it doesn't, and add a category no hint names wherever a unit stands for it. Never tag `katakana` or `kana-written`: the scorer computes them, and the validator rejects them.
 5. `split_points` on compounds and expressions whose parts are words (§4.3, §4.4).
+6. Leave `also` and `joined` out. The reviewer adds them after the two labelings are merged (§5).
 
 Offsets are code points into `text`, end exclusive; `text[start:end]` must equal `surface`. Build the JSON with a short script in your scratch directory rather than by hand, so offsets and escaping are right.
 

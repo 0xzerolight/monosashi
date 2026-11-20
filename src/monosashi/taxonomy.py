@@ -5,9 +5,19 @@ unit's ``targets``, and a record's categories are the union over its units.
 Most categories descend from anki_miner's parse-benchmark corpus; heteronym,
 counter-reading, name and kansai are new. SPEC.md §6 prints each
 definition word for word, and a test keeps the two in step.
+
+Two categories follow from the unit alone (``COMPUTED``): no ``targets`` list
+names them, and the scorer works them out with ``computed_categories``.
 """
 
 from __future__ import annotations
+
+import re
+from collections.abc import Iterable
+
+from monosashi.jmdict import Entry
+from monosashi.kana import is_reading
+from monosashi.schema import CONTENT_KINDS, Unit
 
 CATEGORIES: dict[str, str] = {
     # Unit boundaries
@@ -21,9 +31,9 @@ CATEGORIES: dict[str, str] = {
     "prefix": "A word with a prefix, joined by its entry or as a separate unit; tagged on the word (ご注文, お|仲間).",
     "suffix": "A word with a suffix, joined by its entry or as a separate unit; tagged on the word (田中|さん, 学生|たち).",
     "long-compound": "A kanji run of four or more characters that is not one entry, tagged on each of its content units (選挙管理委員会).",
-    "katakana": "A katakana loanword or run, including runs that tempt a mis-split (アイス|ベア).",
+    "katakana": "A word, expression or interjection with two or more katakana in a row, ー included: a loanword or a katakana run (アイス, ゲー廃, ワタシ). Computed from the surface, never tagged.",
     "name": "A proper name of an individual: a person, place, organization, work or product.",
-    "kana-written": "A word usually written in kanji, written in kana (きれい, すごい, わかる); not where kana is standard.",
+    "kana-written": "A word, expression or interjection written in hiragana whose entry has a kanji spelling JMdict marks common (きれい, すごい, わかる, こと). Computed from the entry, never tagged.",
     # Forms
     "jiru-zuru": "An inflected じる/ずる verb, whichever headword its surface forces (感じた -> 感じる, 感ぜられ -> 感ずる).",
     "archaic-classical": "A classical or archaic form, including historical kana (美しき, せねば, ざる).",
@@ -43,3 +53,22 @@ CATEGORIES: dict[str, str] = {
     "onomatopoeia": "A mimetic or sound-symbolic word (ドキドキ, ふわふわ).",
     "oov": "A content word JMdict lacks in the sense used (slang, a technical term, a loanword); never a name or an unlisted spelling.",
 }
+
+# Categories that follow from the unit's surface and entries alone (§6). They are
+# computed when scoring; the validator rejects them in ``targets``.
+COMPUTED = frozenset({"katakana", "kana-written"})
+
+_KATAKANA_RUN = re.compile("[ァ-ヺ][ァ-ヺー]")
+_COMPUTED_KINDS = CONTENT_KINDS - {"name"}
+
+
+def computed_categories(unit: Unit, entries: Iterable[Entry]) -> frozenset[str]:
+    """The ``COMPUTED`` categories ``unit`` stands for; ``entries`` are its JMdict entries."""
+    if unit.kind not in _COMPUTED_KINDS:
+        return frozenset()
+    found = set()
+    if _KATAKANA_RUN.search(unit.surface):
+        found.add("katakana")
+    if is_reading(unit.surface) and any(k in e.common_spellings for e in entries for k in e.kanji):
+        found.add("kana-written")
+    return frozenset(found)

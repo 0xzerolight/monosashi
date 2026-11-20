@@ -26,6 +26,7 @@ from monosashi.jmdict import Dictionary
 from monosashi.label.candidates import Candidate, candidate_sheet, render_senses, render_sheet
 from monosashi.schema import source_to_dict
 from monosashi.sources import Sentence
+from monosashi.taxonomy import COMPUTED
 
 BATCH_SIZE = 25
 # Two blind labelers per sentence; their labelings are compared unit by unit.
@@ -49,7 +50,8 @@ def skeleton(sentence: Sentence) -> dict[str, object]:
 
 
 def sheet(sentence: Sentence, candidates: list[Candidate]) -> str:
-    hints = sorted({(h.start, h.end, h.category) for h in sentence.hints})
+    # Computed categories are never tagged (SPEC.md §6), so their hints are not shown.
+    hints = sorted({(h.start, h.end, h.category) for h in sentence.hints if h.category not in COMPUTED})
     lines = [f"## {sentence.id}", ""]
     if hints:
         lines.append("Hints (the tagger's guesses; confirm or drop each one):")

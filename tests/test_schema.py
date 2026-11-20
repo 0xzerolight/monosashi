@@ -19,6 +19,18 @@ def test_round_trip_is_lossless(tmp_path: Path) -> None:
     assert rec.categories == {"compound", "inflection-chain", "te-auxiliary"}
 
 
+def test_also_and_joined_round_trip() -> None:
+    data = hajimete_shimatta()
+    data["units"][0].update(also=[1483070], joined={"end": 3, "entries": [1483150]})
+    rec = record_from_dict(data)
+    assert rec.units[0].also == (1483070,)
+    assert rec.units[0].joined is not None and rec.units[0].joined.end == 3
+    assert record_to_dict(rec) == data
+    data["units"][0]["joined"]["start"] = 0
+    with pytest.raises(SchemaError, match="unknown field"):
+        record_from_dict(data)
+
+
 def test_unknown_fields_are_rejected() -> None:
     data = hajimete_shimatta()
     data["units"][0]["lemma"] = "彼女"

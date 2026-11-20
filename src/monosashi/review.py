@@ -71,6 +71,10 @@ def _unit_line(u: Mapping[str, Any], dictionary: Dictionary | None = None) -> st
     if u.get("normalized"):
         n = u["normalized"]
         parts.append(f"normalized={n['form']}/{n['form_reading']}/{entries(n['entries'], n['form'], JMDICT)}")
+    if u.get("also"):
+        parts.append("also=" + entries(u["also"], None, JMDICT))
+    if u.get("joined"):
+        parts.append(f"joined=→{u['joined']['end']} " + entries(u["joined"]["entries"], None, JMDICT))
     return "  " + "  ".join(parts)
 
 

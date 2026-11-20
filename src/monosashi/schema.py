@@ -36,6 +36,15 @@ class Normalized:
 
 
 @dataclass(frozen=True, slots=True)
+class Joined:
+    """A longer entry that is right too: it starts with the unit and runs on through the
+    function units after it, up to ``end`` (一度も over 一度|も)."""
+
+    end: int
+    entries: tuple[int, ...]
+
+
+@dataclass(frozen=True, slots=True)
 class Unit:
     start: int
     end: int
@@ -49,6 +58,8 @@ class Unit:
     split_points: tuple[int, ...] = ()
     targets: tuple[str, ...] = ()
     normalized: Normalized | None = None
+    also: tuple[int, ...] = ()  # other entries that are right answers on this span (信じられない)
+    joined: Joined | None = None
 
     @property
     def is_content(self) -> bool:
@@ -132,8 +143,11 @@ _UNIT_KEYS = frozenset(
         "split_points",
         "targets",
         "normalized",
+        "also",
+        "joined",
     }
 )
+_JOINED_KEYS = frozenset({"end", "entries"})
 _RECORD_KEYS = frozenset({"id", "text", "source", "register", "slice", "units", "label"})
 
 
@@ -153,6 +167,14 @@ def unit_from_dict(data: Mapping[str, Any], path: str = "unit") -> Unit:
             form_reading=value_of(raw, "form_reading", str, f"{path}.normalized"),
             entries=tuple_of(raw, "entries", int, f"{path}.normalized"),
         )
+    joined = None
+    if data.get("joined") is not None:
+        raw = mapping(data["joined"], f"{path}.joined")
+        unknown_keys(raw, _JOINED_KEYS, f"{path}.joined")
+        joined = Joined(
+            end=value_of(raw, "end", int, f"{path}.joined"),
+            entries=tuple_of(raw, "entries", int, f"{path}.joined"),
+        )
     return Unit(
         start=value_of(data, "start", int, path),
         end=value_of(data, "end", int, path),
@@ -166,6 +188,8 @@ def unit_from_dict(data: Mapping[str, Any], path: str = "unit") -> Unit:
         split_points=tuple_of(data, "split_points", int, path),
         targets=tuple_of(data, "targets", str, path),
         normalized=normalized,
+        also=tuple_of(data, "also", int, path),
+        joined=joined,
     )
 
 
@@ -227,6 +251,10 @@ def unit_to_dict(unit: Unit) -> dict[str, Any]:
             "form_reading": unit.normalized.form_reading,
             "entries": list(unit.normalized.entries),
         }
+    if unit.also:
+        out["also"] = list(unit.also)
+    if unit.joined is not None:
+        out["joined"] = {"end": unit.joined.end, "entries": list(unit.joined.entries)}
     return out
 
 

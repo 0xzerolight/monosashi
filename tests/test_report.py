@@ -123,9 +123,9 @@ def test_seeds_get_their_own_table_and_registers_state_their_composition(diction
     # The category table leaves the seeds out too: a tool's own test sentences can't judge it.
     categories = {row[0] for row in _section(text, "By category (target units only, seeds left out)")[1:]}
     kept = [r for r in records if r.slice != "seed"]
-    assert categories == {
-        f"{c} ({sum(1 for r in kept if c in r.categories)})" for c in {c for r in kept for c in r.categories}
-    }
+    counts = {c: sum(1 for r in kept if any(scorer.in_category(u, c) for u in r.units)) for c in CATEGORIES}
+    assert categories == {f"{c} ({n})" for c, n in counts.items() if n}
+    assert counts["kana-written"]  # a computed category has a row though no unit is tagged with it
     assert any(c in r.categories for r in records[:3] for c in CATEGORIES)  # the seeds do carry targets
     for phrase in ("threshold", "decision", "adopt", "contribute"):
         assert phrase not in text.lower(), phrase
