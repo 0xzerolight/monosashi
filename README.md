@@ -24,8 +24,8 @@ Please leave a ⭐ star if monosashi helped you - it helps others find it :).
 | tool | card-ready rate | right word at the right start | junk rate (lower is better) | median ms |
 |---|--:|--:|--:|--:|
 | [jiten](https://github.com/Sirush/Jiten) | 86.0 | 88.2 | 9.2 | 4.72 |
+| [anki_miner](https://github.com/0xzerolight/anki_miner) | 84.3 | 84.8 | 3.4 | 2.36 |
 | [ichiran](https://github.com/tshatrov/ichiran) | 84.1 | 85.7 | 14.1 | 185.22 |
-| [anki_miner](https://github.com/0xzerolight/anki_miner) | 83.8 | 84.2 | 3.4 | 1.44 |
 | [himotoki](https://github.com/moikdev/himotoki-rs) | 83.4 | 85.7 | 15.6 | 3.76 |
 | [yomitan](https://github.com/yomidevs/yomitan) | 76.9 | 78.1 | 26.2 | 18.75 |
 | [sudachi-c](https://github.com/WorksApplications/sudachi.rs) | 61.9 | 74.7 | 26.6 | 0.04 |
