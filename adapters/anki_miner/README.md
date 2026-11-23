@@ -6,7 +6,7 @@
 
 | Source | Pin |
 |---|---|
-| anki_miner | commit `434d0434d0b478baf1761cbd1978fdb88f9355cd` (2026-11-21), version 3.13.0 plus unreleased changes |
+| anki_miner | commit `5c2de226bacb5add9e3b988186b366bf02085583` (2026-11-23), version 3.13.0 plus unreleased changes |
 | Tokenizer dictionary | unidic-lite 1.0.8 (UniDic 2.1.2), from anki_miner's venv |
 | JMdict | [jmdict-yomitan](https://github.com/yomidevs/jmdict-yomitan) release `2026-10-09`, `JMdict_english.zip`, 15,607,868 bytes, sha256 `ae45a789a7fd47f2a6f05c8d8238abf78c9352576fb7fe97cbc0e107c4fe173c` ("JMdict [2026-10-09]") |
 
@@ -18,7 +18,7 @@ The adapter runs in anki_miner's own venv at `~/Projects/anki_miner/.venv` (the 
 
 ```sh
 git clone https://github.com/0xzerolight/anki_miner.git ~/Projects/anki_miner
-cd ~/Projects/anki_miner && git checkout 434d0434d0b478baf1761cbd1978fdb88f9355cd
+cd ~/Projects/anki_miner && git checkout 5c2de226bacb5add9e3b988186b366bf02085583
 python -m venv .venv && .venv/bin/pip install -e .
 ```
 
@@ -48,6 +48,17 @@ uv run monosashi run anki_miner --gold data/selection/core.jsonl --out runs
 
 `partition` is false: anki_miner outputs the words it would make cards of, not the whole sentence, so it is scored as a content-only tool (SPEC §7). Fields are `form` (the card front, `mined_form`) and `form_reading` (the card's reading, `expression_reading`). The span runs from the word's start to the end of its inflected form (`highlight_end`), so 始めてしまった is one unit with form 始める. The adapter docstring says how the parser is built.
 
-The parser is the one anki_miner builds for a Japanese config: JMdict lookups on, plus the name-wordset matcher, which keeps a known name whole (大江山, not 江山). The filters a mining run applies afterwards (known words, frequency, word lists, the name exclusion) do not run. A word that occurs twice in a sentence is output at both places.
+The parser is the one anki_miner builds for a Japanese config, made by the app's own factory (`_create_subtitle_parser`), so the Japanese-only policies the app runs with (the script gate, name-piece rejects) are in it: JMdict lookups on, plus the name-wordset matcher, which keeps a known name whole (大江山, not 江山). The filters a mining run applies afterwards (known words, frequency, word lists, the name exclusion) do not run. A word that occurs twice in a sentence is output at both places.
 
-The config sets four user settings over anki_miner's defaults, chosen for the highest card-ready rate on this gold set (`SETTINGS` in `adapter.py`): number + counter cards on (4人, read よにん), pre-noun adjectives and conjunctions mined (大きな, 又), and proper nouns and numerals no longer excluded. With anki_miner's defaults it scores lower: about 1.7 points from the counters and 0.8 from the other three.
+The config sets six user settings (`SETTINGS` in `adapter.py`), each on the side that gives the higher card-ready rate on this gold set. Setting any one of them back lowers card-ready by:
+
+| setting | value here | anki_miner's default | card-ready lost at the default |
+|---|---|---|---|
+| `mine_number_counters`: number + counter cards (4人, read よにん) | on | off | 1.85 |
+| `excluded_subtypes`: proper nouns and numerals no longer excluded | not excluded | excluded | 0.54 |
+| `mine_interjections`: interjection cards (ああ, もしもし) | on | off | 0.28 |
+| `allowed_pos`: pre-noun adjectives and conjunctions mined (大きな, 又) | mined | not mined | 0.23 |
+| `mine_person_names`: a person's name as a card | on | off | 0.09; junk 3.45 → 3.49 (two junk units fewer, 115 judged units fewer) |
+| `mine_te_auxiliaries`: a word after a て-form as a card (いい, やる, くださる after て) | on | on | 0.07 if turned off |
+
+With every setting at anki_miner's defaults it scores 84.7, three points lower.

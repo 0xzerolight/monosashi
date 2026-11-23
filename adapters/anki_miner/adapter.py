@@ -8,20 +8,24 @@ Only the pinned commit runs. The adapter reads the checkout's HEAD before it
 imports anything from it, since another commit may not even import, and exits
 naming both commits when HEAD is not ``PINNED_COMMIT``.
 
-The parser is built the way anki_miner's ``create_services`` builds it for a
-Japanese config with ``SETTINGS`` applied: ``SubtitleParserService`` with the
-offline probes of the JMdict index in the ``jmdict-english`` slot (compound
-matching, kana recovery, the verb-front resolver, attested readings, entry
-tags) and the name-wordset matcher. Each record is one ``ReadingUnit`` through
+The parser is built by anki_miner's own factory, the call its
+``create_services`` makes for a Japanese config with ``SETTINGS`` applied
+(``_create_subtitle_parser``), so it carries the Japanese-only policies the
+factory injects (the script gate, name-piece rejects) with the offline probes
+of the JMdict index in the ``jmdict-english`` slot (compound matching, kana
+recovery, the verb-front resolver, attested readings, entry tags) and the
+name-wordset matcher. Each record is one ``ReadingUnit`` through
 ``parse_text_units``, the path anki_miner's reading tab mines text with; none
 of the optional filters (known words, frequency, word lists, name wordsets)
 run, as with its ``bypass_optional_filters``.
 
-``SETTINGS`` are user settings a learner can pick in anki_miner, chosen for the
-highest card-ready rate on this gold set: number + counter cards on, pre-noun
-adjectives and conjunctions among the mined parts of speech, and proper nouns
-and numerals no longer excluded subtypes. The name-wordset matcher stays, as
-without it names split into junk pieces.
+``SETTINGS`` are user settings a learner can pick in anki_miner, each set where
+it gives the higher card-ready rate on this gold set (README.md has the reason
+for each): number + counter cards on, pre-noun adjectives and conjunctions
+among the mined parts of speech, proper nouns and numerals no longer excluded
+subtypes, interjection cards on, words after a て-form mined, and person names
+mined. The name-wordset matcher stays, as without it names split into junk
+pieces.
 
 anki_miner is content-only: it outputs card words, not a partition. For each:
 
@@ -52,14 +56,17 @@ from typing import Any
 from monosashi.adapters.protocol import serve, to_hiragana
 
 # The pin in README.md.
-PINNED_COMMIT = "434d0434d0b478baf1761cbd1978fdb88f9355cd"
+PINNED_COMMIT = "5c2de226bacb5add9e3b988186b366bf02085583"
 # The slot AnkiMinerConfig's default dictionary_chain points at.
 DICT_SLOT = "jmdict-english"
-# AnkiMinerConfig fields set over the defaults (module docstring).
+# AnkiMinerConfig fields set over the defaults (module docstring, README.md).
 SETTINGS: dict[str, Any] = {
     "mine_number_counters": True,
     "allowed_pos": ("名詞", "動詞", "形容詞", "副詞", "形状詞", "代名詞", "連体詞", "接続詞"),
     "excluded_subtypes": ("非自立", "接尾", "助動詞", "接頭"),
+    "mine_interjections": True,
+    "mine_te_auxiliaries": True,
+    "mine_person_names": True,
 }
 
 
@@ -113,10 +120,10 @@ def main() -> None:
 
     import anki_miner
     from anki_miner.config.config import AnkiMinerConfig
+    from anki_miner.gui.utils.service_factory import _create_subtitle_parser
     from anki_miner.models.reading import ReadingUnit
     from anki_miner.services.definition_service import DefinitionService
     from anki_miner.services.dictionary.registry import DictionaryRegistry
-    from anki_miner.services.subtitle_parser import SubtitleParserService
     from anki_miner.services.wordset_service import WordsetService
     from anki_miner.utils.ja_normalize import normalize_for_tokenization, standardize_kanji_variants
 
@@ -132,7 +139,7 @@ def main() -> None:
         )
     wordsets = WordsetService(enabled_ids=config.excluded_wordsets)
     wordsets.load()
-    parser = SubtitleParserService(
+    parser = _create_subtitle_parser(
         config,
         term_lookup=definitions.offline_terms_exist,
         name_lookup=wordsets.excluded_terms if wordsets.is_available() else None,

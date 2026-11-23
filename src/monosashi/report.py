@@ -31,8 +31,9 @@ BREAKDOWN = ("card", "reading_tiled", "form")
 # adapter describes itself with. adapters/<name>/README.md has the detail.
 NOTES = {
     "anki_miner": (
-        "runs with four of its settings changed from the defaults: number + counter cards on, "
-        "pre-noun adjectives and conjunctions mined, proper nouns and numerals not excluded"
+        "runs with five of its settings changed from the defaults: number + counter cards on, "
+        "pre-noun adjectives and conjunctions mined, proper nouns and numerals not excluded, "
+        "interjections and person names mined"
     ),
     "jiten": (
         "the adapter widens ASCII digits before placing words (1人 as １人), which jiten.moe does not; "
