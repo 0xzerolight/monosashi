@@ -6,7 +6,7 @@
 
 | Source | Pin |
 |---|---|
-| anki_miner | commit `5c2de226bacb5add9e3b988186b366bf02085583` (2026-11-23), version 3.13.0 plus unreleased changes |
+| anki_miner | commit `97179acaea96f4bdbdad79e8da29007a4c0170ae` (2026-11-23), version 3.13.0 plus unreleased changes |
 | Tokenizer dictionary | unidic-lite 1.0.8 (UniDic 2.1.2), from anki_miner's venv |
 | JMdict | [jmdict-yomitan](https://github.com/yomidevs/jmdict-yomitan) release `2026-10-09`, `JMdict_english.zip`, 15,607,868 bytes, sha256 `ae45a789a7fd47f2a6f05c8d8238abf78c9352576fb7fe97cbc0e107c4fe173c` ("JMdict [2026-10-09]") |
 
@@ -18,7 +18,7 @@ The adapter runs in anki_miner's own venv at `~/Projects/anki_miner/.venv` (the 
 
 ```sh
 git clone https://github.com/0xzerolight/anki_miner.git ~/Projects/anki_miner
-cd ~/Projects/anki_miner && git checkout 5c2de226bacb5add9e3b988186b366bf02085583
+cd ~/Projects/anki_miner && git checkout 97179acaea96f4bdbdad79e8da29007a4c0170ae
 python -m venv .venv && .venv/bin/pip install -e .
 ```
 
@@ -58,7 +58,7 @@ The config sets six user settings (`SETTINGS` in `adapter.py`), each on the side
 | `excluded_subtypes`: proper nouns and numerals no longer excluded | not excluded | excluded | 0.54 |
 | `mine_interjections`: interjection cards (ああ, もしもし) | on | off | 0.28 |
 | `allowed_pos`: pre-noun adjectives and conjunctions mined (大きな, 又) | mined | not mined | 0.23 |
-| `mine_person_names`: a person's name as a card | on | off | 0.09; junk 3.45 → 3.49 (two junk units fewer, 115 judged units fewer) |
+| `mine_person_names`: a person's name as a card | on | off | 0.09; junk 3.46 → 3.51 (two junk units fewer, 115 judged units fewer) |
 | `mine_te_auxiliaries`: a word after a て-form as a card (いい, やる, くださる after て) | on | on | 0.07 if turned off |
 
 With every setting at anki_miner's defaults it scores 84.7, three points lower.
